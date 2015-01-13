@@ -1,0 +1,23 @@
+---
+layout: post
+title:  "Setup Jekyll, Octopress and knitr for workflow"
+categories: [R]
+tags: [knitr, jekyll]
+---
+
+## Requirements
+
+```{r, eval=FALSE}
+install.packages(
+  c('servr', 'knitr'),
+  type = 'source',
+  repos = c('http://yihui.name/xran', 'http://cran.rstudio.com')
+)
+```
+
+## In RStudio
+
+```{r, eval=FALSE}
+servr::jekyll(input = "_rmd", output = "source/_posts")
+```
+
