@@ -1,9 +1,12 @@
 ---
 layout: post
-title:  "Setup Jekyll, Octopress and knitr for workflow"
-categories: [R]
+title:  "Setup Jekyll Octopress and knitr for workflow"
+filename: 2015-01-13-Setup-Jekyll-Octopress-and-knitr-for-workflow
+categories: R
 tags: [knitr, jekyll]
 ---
+
+Hello!
 
 ## Requirements
 
