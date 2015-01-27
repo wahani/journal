@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Journal</title>
+  <title>2015-01-26-Notes - Journal</title>
   <meta name="author" content="Sebastian Warnholz">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://wahani.github.io/journal">
+  <link rel="canonical" href="http://wahani.github.io/journal/blog/2015/01/26/Notes">
   <link href="/journal/favicon.png" rel="icon">
   <link href="/journal/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/journal/atom.xml" rel="alternate" title="Journal" type="application/atom+xml">
@@ -59,15 +59,12 @@ src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorM
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/journal/blog/2015/01/26/Notes">2015-01-26-Notes</a></h1>
+      <h1 class="entry-title">2015-01-26-Notes</h1>
     
     
       <p class="meta">
@@ -90,7 +87,7 @@ src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorM
   </header>
 
 
-  <div class="entry-content"><h1 id="how-to-preserve-attributes-of-a-dataframe">How to preserve attributes of a data.frame</h1>
+<div class="entry-content"><h1 id="how-to-preserve-attributes-of-a-dataframe">How to preserve attributes of a data.frame</h1>
 
 <p>In the following we have two expressions in which the attributes of a data.frame will be lost.</p>
 
@@ -174,90 +171,16 @@ myFilter <span class="o">&lt;-</span> preserve_attributes<span class="p">(</span
 ## [1] 5</code></pre></div>
 
 </div>
-  
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/journal/blog/2015/01/22/notes">2015-01-22 Notes</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
   
 
+<span class="byline author vcard">Posted by <span class="fn">Sebastian</span></span>
 
-<time datetime="2015-01-22T00:00:00+01:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This might be interesting in combination with <code>lambda.tools::tryn</code>:</p>
-
-<div class="highlight"><pre><code class="language-r" data-lang="r">call_with_delay <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>fun<span class="p">,</span> delay<span class="p">)</span> <span class="p">{</span>
-    <span class="kp">force</span><span class="p">(</span>delay<span class="p">)</span>
-    <span class="kr">function</span><span class="p">(</span><span class="kc">...</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kp">Sys.sleep</span><span class="p">(</span>delay<span class="p">)</span>
-        fun<span class="p">(</span><span class="kc">...</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
-
-<p>What if I have a function which needs to be applied to each element and later I want to vectorize it.</p>
-
-<div class="highlight"><pre><code class="language-r" data-lang="r">lapply_wrapper <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>fun<span class="p">,</span> red_fun <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="p">)</span> <span class="p">{</span>
-    <span class="kp">force</span><span class="p">(</span>fun<span class="p">)</span>
-    <span class="kp">force</span><span class="p">(</span>red_fun<span class="p">)</span>
-    <span class="kr">function</span><span class="p">(</span><span class="kc">...</span><span class="p">)</span> <span class="p">{</span>
-        mc <span class="o">&lt;-</span> <span class="kp">match.call</span><span class="p">(</span>fun<span class="p">)</span>
-        mc<span class="p">[[</span><span class="m">1</span><span class="p">]]</span> <span class="o">&lt;-</span> <span class="kp">quote</span><span class="p">(</span><span class="kp">lapply</span><span class="p">)</span>
-        <span class="kp">names</span><span class="p">(</span>mc<span class="p">)[</span><span class="m">2</span><span class="p">]</span> <span class="o">&lt;-</span> <span class="s">&quot;X&quot;</span>
-        funPos <span class="o">&lt;-</span> <span class="kp">length</span><span class="p">(</span>mc<span class="p">)</span> <span class="o">+</span> <span class="m">1</span>
-        mc<span class="p">[[</span>funPos<span class="p">]]</span> <span class="o">&lt;-</span> <span class="kp">quote</span><span class="p">(</span>fun<span class="p">)</span>
-        <span class="kp">names</span><span class="p">(</span>mc<span class="p">)[</span>funPos<span class="p">]</span> <span class="o">&lt;-</span> <span class="s">&quot;FUN&quot;</span>
-        red_fun<span class="p">(</span><span class="kp">eval</span><span class="p">(</span>mc<span class="p">))</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
-
-<p>And a test:</p>
-
-<div class="highlight"><pre><code class="language-r" data-lang="r">vec_mean <span class="o">&lt;-</span> lapply_wrapper<span class="p">(</span><span class="kp">mean</span><span class="p">,</span> <span class="kp">unlist</span><span class="p">)</span>
-vec_mean<span class="p">(</span><span class="kt">list</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">,</span> <span class="m">2</span><span class="o">:</span><span class="m">10</span><span class="p">))</span></code></pre></div>
-
-<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 3 6</code></pre></div>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/journal/blog/2015/01/13/Setup-Jekyll-Octopress-and-knitr-for-workflow">Setup Jekyll Octopress and Knitr for Workflow</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
@@ -269,132 +192,39 @@ vec_mean<span class="p">(</span><span class="kt">list</span><span class="p">(</s
   
 
 
-<time datetime="2015-01-13T00:00:00+01:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Hello!</p>
-
-<h2 id="requirements">Requirements</h2>
-
-<div class="highlight"><pre><code class="language-r" data-lang="r">install.packages<span class="p">(</span>
-  <span class="kt">c</span><span class="p">(</span><span class="s">&#39;servr&#39;</span><span class="p">,</span> <span class="s">&#39;knitr&#39;</span><span class="p">),</span>
-  type <span class="o">=</span> <span class="s">&#39;source&#39;</span><span class="p">,</span>
-  repos <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&#39;http://yihui.name/xran&#39;</span><span class="p">,</span> <span class="s">&#39;http://cran.rstudio.com&#39;</span><span class="p">)</span>
-<span class="p">)</span></code></pre></div>
-
-<h2 id="in-rstudio">In RStudio</h2>
-
-<div class="highlight"><pre><code class="language-r" data-lang="r">servr<span class="o">::</span>jekyll<span class="p">(</span>input <span class="o">=</span> <span class="s">&quot;_rmd&quot;</span><span class="p">,</span> output <span class="o">=</span> <span class="s">&quot;source/_posts&quot;</span><span class="p">)</span></code></pre></div>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
+<time datetime="2015-01-26T00:00:00+01:00" pubdate data-updated="true"></time>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/journal/blog/2014/06/15/Functional-Programming-with-lambdar">Functional Programming With lambda.r</a></h1>
-    
-    
-      <p class="meta">
-        
 
-
-
-
-
-
-
-
+<span class="categories">
   
+    <a class='category' href='/journal/blog/categories/attributes/'>attributes</a>, <a class='category' href='/journal/blog/categories/s4/'>s4,</a>
+  
+</span>
 
 
-<time datetime="2014-06-15T00:00:00+02:00" pubdate data-updated="true"></time>
-        
-      </p>
+    </p>
     
-  </header>
-
-
-  <div class="entry-content"><p>My first post was on <a href="/journal/Introducing-S4-Methods/">S4-methods</a> and how I could add new features to a function without changing it – using function dispatch in S4. This works out fine, but is not optimal for me. </p>
-
-<ul>
-  <li>The function <code>setMethod</code> introduces code which is dificult to read</li>
-  <li>The dispatch uses classes not attributes or different conditions for dispatch</li>
-  <li>I am not trained to use object orientation as a programming style (I am not at all trained as a programmer) and after using it in a project I think if I want to get started with object orientation maybe I should not use a functional language to begin with</li>
-  <li>I would never use S4 outside package delelopment</li>
-  <li>And S4 is not playing nice with roxygen2, it took me hours to adjust my workflow</li>
-</ul>
-
-<p>So I wanted to get back to the functional programming techniques available in R. Here <a href="http://cran.r-project.org/web/packages/lambda.r/index.html">lambda.r</a> seems to be a nice addition to what R already offers. Especially the capability of dispatching functions. So here is an example.
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://wahani.github.io/journal/blog/2015/01/26/Notes" data-via="" data-counturl="http://wahani.github.io/journal/blog/2015/01/26/Notes" >Tweet</a>
+  
+  
+  
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/journal/blog/2014/06/15/Functional-Programming-with-lambdar">Read on &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  
-    <article>
+    
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/journal/blog/2014/06/03/Simulations-in-Small-Area-Estimation">saeSim: Simulation Tools in Small Area Estimation</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-03T00:00:00+02:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In this post I want to introduce the package <a href="/journal/saeSim">saeSim</a>. The package improved my set-up of design-based and model-based simulation scenarios in the context of Small Area Estimation. It introduces components with which the flow of the simulation is framed and supports a unified structure and interface between each step.</p>
+        <a class="basic-alignment left" href="/journal/blog/2015/01/22/notes" title="Previous Post: 2015-01-22 Notes">&laquo; 2015-01-22 Notes</a>
+      
+      
+    </p>
+  </footer>
+</article>
 
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/journal/blog/2014/06/03/Simulations-in-Small-Area-Estimation">Read on &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/journal/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
-<aside class="sidebar">
+  <aside class="sidebar">
    
 <form action="https://www.google.com/search" method="get">
   <fieldset role="search">
@@ -466,6 +296,7 @@ vec_mean<span class="p">(</span><span class="kt">list</span><span class="p">(</s
 
   
 </aside>
+
 
 
     </div>

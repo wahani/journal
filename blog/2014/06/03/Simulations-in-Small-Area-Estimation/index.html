@@ -1,0 +1,423 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>saeSim: Simulation Tools in Small Area Estimation - Journal</title>
+  <meta name="author" content="Sebastian Warnholz">
+
+  
+  <meta name="description" content="A short introduction of the R-Package saeSim. Tools for model- and design based simulations in the field of Small Area Estimation.">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://wahani.github.io/journal/blog/2014/06/03/Simulations-in-Small-Area-Estimation">
+  <link href="/journal/favicon.png" rel="icon">
+  <link href="/journal/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/journal/atom.xml" rel="alternate" title="Journal" type="application/atom+xml">
+  <script src="/journal/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/journal/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,700' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+<!--- MathJax Configuration -->
+<script type="text/javascript"
+src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/journal/">Journal</a></h1>
+  
+    <h2>Notes from seb!</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  
+  
+</ul>
+
+<ul class="main-navigation">
+  <li><a href="/journal/">Blog</a></li>
+  <li><a href="/journal/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">saeSim: Simulation Tools in Small Area Estimation</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-03T00:00:00+02:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In this post I want to introduce the package <a href="/journal/saeSim">saeSim</a>. The package improved my set-up of design-based and model-based simulation scenarios in the context of Small Area Estimation. It introduces components with which the flow of the simulation is framed and supports a unified structure and interface between each step.</p>
+
+<!--more-->
+
+<h2 id="general-idea-and-workflow">General idea and workflow</h2>
+<p>As I was writing my scripts for simulation I typically ended up using loop structures every second line. Every time I wanted to add or change something, I appended new lines to the script which then needed to iterate over my data. Consider a simple task: Predict a population mean and compare the bias of a linear model and sample average. Repeat this 100 times. The task is clear, simulate 100 populations, compute the mean in each population, draw a sample from each population apply the two models on the samples and estimate the population mean.</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>reshape2<span class="p">)</span>
+
+<span class="c1"># Generate data</span>
+dataList <span class="o">&lt;-</span> <span class="kp">replicate</span><span class="p">(</span><span class="m">100</span><span class="p">,</span> <span class="p">{</span>
+  dat <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>x <span class="o">=</span> rnorm<span class="p">(</span><span class="m">100</span><span class="p">),</span> e <span class="o">=</span> rnorm<span class="p">(</span><span class="m">100</span><span class="p">))</span>
+  dat<span class="o">$</span>y <span class="o">&lt;-</span> <span class="m">100</span> <span class="o">+</span> <span class="m">2</span> <span class="o">*</span> dat<span class="o">$</span>x <span class="o">+</span> dat<span class="o">$</span>e
+  dat
+<span class="p">},</span> simplify <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span>
+
+<span class="c1"># population mean</span>
+dataList <span class="o">&lt;-</span> <span class="kp">lapply</span><span class="p">(</span>dataList<span class="p">,</span> <span class="kr">function</span><span class="p">(</span>dat<span class="p">)</span> <span class="p">{</span>
+  dat<span class="o">$</span>popMean <span class="o">&lt;-</span> <span class="kp">mean</span><span class="p">(</span>dat<span class="o">$</span>y<span class="p">)</span>
+  dat
+<span class="p">})</span>
+
+<span class="c1"># Draw a sample</span>
+dataList <span class="o">&lt;-</span> <span class="kp">lapply</span><span class="p">(</span>dataList<span class="p">,</span> <span class="kr">function</span><span class="p">(</span>dat<span class="p">)</span> dat<span class="p">[</span><span class="kp">sample.int</span><span class="p">(</span><span class="m">100</span><span class="p">,</span> <span class="m">20</span><span class="p">),</span> <span class="p">])</span>
+
+<span class="c1"># Apply model and make prediction</span>
+dataList <span class="o">&lt;-</span> <span class="kp">lapply</span><span class="p">(</span>dataList<span class="p">,</span> <span class="kr">function</span><span class="p">(</span>dat<span class="p">)</span> <span class="p">{</span>
+  fancyModel <span class="o">&lt;-</span> lm<span class="p">(</span>y <span class="o">~</span> x<span class="p">,</span> data <span class="o">=</span> dat<span class="p">)</span>
+  out <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>
+    lm <span class="o">=</span> predict<span class="p">(</span>fancyModel<span class="p">,</span> <span class="kt">data.frame</span><span class="p">(</span>x <span class="o">=</span> <span class="kp">mean</span><span class="p">(</span>dat<span class="o">$</span>x<span class="p">))),</span>
+    mean <span class="o">=</span> <span class="kp">mean</span><span class="p">(</span>dat<span class="o">$</span>y<span class="p">),</span>
+    popMean <span class="o">=</span> <span class="kp">mean</span><span class="p">(</span>dat<span class="o">$</span>popMean<span class="p">)</span>
+    <span class="p">)</span>
+  out
+<span class="p">})</span>
+
+dat <span class="o">&lt;-</span> <span class="kp">do.call</span><span class="p">(</span><span class="kp">rbind</span><span class="p">,</span> dataList<span class="p">)</span>
+dat<span class="o">$</span>biasLm <span class="o">&lt;-</span> dat<span class="o">$</span>lm <span class="o">-</span> dat<span class="o">$</span>popMean
+dat<span class="o">$</span>biasMean <span class="o">&lt;-</span> dat<span class="o">$</span>mean <span class="o">-</span> dat<span class="o">$</span>popMean
+
+datEval <span class="o">&lt;-</span> melt<span class="p">(</span>dat<span class="p">[</span><span class="kt">c</span><span class="p">(</span><span class="s">&quot;biasLm&quot;</span><span class="p">,</span> <span class="s">&quot;biasMean&quot;</span><span class="p">)])</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## No id variables; using all as measure variables</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">boxplot<span class="p">(</span>value <span class="o">~</span> variable<span class="p">,</span> data <span class="o">=</span> datEval<span class="p">,</span> horizontal<span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span></code></pre></div>
+
+<p><img src="/journal/images/images/2014-06-03-Simulations-in-Small-Area-Estimation/unnamed-chunk-1-1.png" title="center" alt="center" width="100%" /></p>
+
+<p>Imagine this style of writing with more complex data and models and hundreds or thousands of lines of code. Reproducing yourself is a mess, let alone find bugs, mistakes, etc. Another issue is that a lot of effort is needed to parallelize the computation. I would need to replace every looping structure with a parallel version. And furthermore the real task is shadowed by all kinds of unnecessary control structures. The idea to overcome this was to write one function which would do the data generation and computation on that data. That would lead only to one loop and to a potentially long function for simulation – although it is not a problem to split the task step-wise into smaller functions which would be called in the ‘main’ simulation function. In the end this is what I tried with saeSim. I identified the repeating steps and built a framework so I can easily set-up simulations without thinking about the structure and more about the statistical problem.</p>
+
+<h2 id="a-simsetup">A sim_setup</h2>
+<p>In all I have 6 steps I can part my simulation into. </p>
+
+<ul>
+  <li>data generation: <code>sim_gen()</code></li>
+  <li>computing on the population: <code>sim_calc(., level = "population")</code></li>
+  <li>drawing samples: <code>sim_sample()</code></li>
+  <li>computing on the sample: <code>sim_calc(., level = "sample")</code></li>
+  <li>aggregating the data (area level information): <code>sim_agg()</code></li>
+  <li>finally computing on the aggregates: <code>sim_calc(., level = "agg")</code></li>
+</ul>
+
+<p>The purpose of these functions is simply to control the flow of the simulation and they all take a function as argument. In other words all of these functions control <em>when</em> a function is called – you can decide which function that will be. Let’s see how things add up for a simple data generation scenario:</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># devtools::install_github(&quot;wahani/saeSim&quot;)</span>
+<span class="kn">library</span><span class="p">(</span>saeSim<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## Loading required package: methods
+## Documentation is available at wahani.github.io/saeSim</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Generating a population with 100 domains and 100 units in each domain:</span>
+setup <span class="o">&lt;-</span> base_id<span class="p">(</span><span class="m">100</span><span class="p">,</span> <span class="m">100</span><span class="p">)</span> <span class="o">%&gt;%</span>
+  <span class="c1"># Variable x and error component e</span>
+  sim_gen_x<span class="p">(</span>sd <span class="o">=</span> <span class="m">1</span><span class="p">)</span> <span class="o">%&gt;%</span>
+  sim_gen_e<span class="p">(</span>sd <span class="o">=</span> <span class="m">1</span><span class="p">)</span> <span class="o">%&gt;%</span>
+  sim_resp_eq<span class="p">(</span>y <span class="o">=</span> <span class="m">100</span> <span class="o">+</span> <span class="m">2</span> <span class="o">*</span> x <span class="o">+</span> e<span class="p">)</span></code></pre></div>
+
+<p>To inspect <code>setup</code> I have a <code>plot</code>, <code>autoplot</code>, <code>summary</code> and <code>show</code> method.</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">setup</code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##   idD idU           x           e         y
+## 1   1   1  0.37848715 -0.56426537 100.19271
+## 2   1   2 -0.03322072  0.03155332  99.96511
+## 3   1   3  0.69302346 -0.91341329 100.47263
+## 4   1   4  0.70192788 -1.14242630 100.26143
+## 5   1   5  0.88992447 -0.44572650 101.33412
+## 6   1   6 -0.72537724  1.60834101 100.15759</code></pre></div>
+
+<p>Note that the response ‘y’ will always be constructed automatically. To visualize the data, the plot method will always try to find ‘y’ and plot it against the first variable found.</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">plot<span class="p">(</span>setup<span class="p">)</span></code></pre></div>
+
+<p><img src="/journal/images/images/2014-06-03-Simulations-in-Small-Area-Estimation/unnamed-chunk-4-1.png" title="center" alt="center" width="100%" /></p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># What happens if I add contamination to the error:</span>
+plot<span class="p">(</span>setup <span class="o">%&gt;%</span> sim_gen_ec<span class="p">())</span></code></pre></div>
+
+<p><img src="/journal/images/images/2014-06-03-Simulations-in-Small-Area-Estimation/unnamed-chunk-4-2.png" title="center" alt="center" width="100%" /></p>
+
+<p>In contrast the <code>autoplot</code> function will use ggplot2 and will plot a two dimensional density estimate, very much like <code>smoothScatter</code>.</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">autoplot<span class="p">(</span>setup<span class="p">)</span></code></pre></div>
+
+<p><img src="/journal/images/images/2014-06-03-Simulations-in-Small-Area-Estimation/unnamed-chunk-5-1.png" title="center" alt="center" width="100%" /></p>
+
+<h2 id="back-to-the-introductory-example">Back to the introductory example</h2>
+<p>So how does my scripting change using <code>saeSim</code>. I have some data generation interfaces which are a bit clumsy in this setting, they make my coding clearer in more complex scenarios. My simulation components are connected using the <code>%&amp;%</code> operator. So even complex tasks can be split into several lines to maintain readability. The set-up is separated from the actual repetition, which allows to construct more complex designs and test them easily as I add new steps and components to the scenario.</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Population with 1 domain and 100 units</span>
+setup <span class="o">&lt;-</span> base_id<span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">100</span><span class="p">)</span> <span class="o">%&gt;%</span>
+  <span class="c1"># y = 100 + 2*x + e</span>
+  sim_gen<span class="p">(</span>gen_norm<span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="s">&quot;x&quot;</span><span class="p">))</span> <span class="o">%&gt;%</span>
+  sim_gen<span class="p">(</span>gen_norm<span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="s">&quot;e&quot;</span><span class="p">))</span> <span class="o">%&gt;%</span>
+  sim_resp_eq<span class="p">(</span>y <span class="o">=</span> <span class="m">100</span> <span class="o">+</span> <span class="m">2</span> <span class="o">*</span> x <span class="o">+</span> e<span class="p">)</span> <span class="o">%&gt;%</span>
+  <span class="c1"># Keeping the mean of y</span>
+  sim_comp_popMean<span class="p">()</span> <span class="o">%&gt;%</span>
+  <span class="c1"># Drawing a simple random sample with n = 20</span>
+  sim_sample<span class="p">(</span>sample_number<span class="p">(</span><span class="m">20</span><span class="p">))</span> <span class="o">%&gt;%</span>
+  <span class="c1"># Computing the estimated parameters</span>
+  sim_comp_sample<span class="p">(</span><span class="kr">function</span><span class="p">(</span>dat<span class="p">)</span> <span class="p">{</span>
+    fancyModel <span class="o">&lt;-</span> lm<span class="p">(</span>y <span class="o">~</span> x<span class="p">,</span> data <span class="o">=</span> dat<span class="p">)</span>
+    out <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>
+      lm <span class="o">=</span> predict<span class="p">(</span>fancyModel<span class="p">,</span> <span class="kt">data.frame</span><span class="p">(</span>x <span class="o">=</span> <span class="kp">mean</span><span class="p">(</span>dat<span class="o">$</span>x<span class="p">))),</span>
+      mean <span class="o">=</span> <span class="kp">mean</span><span class="p">(</span>dat<span class="o">$</span>y<span class="p">),</span>
+      popMean <span class="o">=</span> <span class="kp">mean</span><span class="p">(</span>dat<span class="o">$</span>popMean<span class="p">)</span>
+      <span class="p">)</span>
+    out
+    <span class="p">})</span>
+
+setup</code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##         lm     mean  popMean
+## 1 100.5592 100.5592 99.80724</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Running the simulation</span>
+res <span class="o">&lt;-</span> sim<span class="p">(</span>setup<span class="p">,</span> R <span class="o">=</span> <span class="m">100</span><span class="p">)</span>
+
+<span class="c1"># Combining results as before:</span>
+dat <span class="o">&lt;-</span> <span class="kp">do.call</span><span class="p">(</span><span class="kp">rbind</span><span class="p">,</span> res<span class="p">)</span>
+dat<span class="o">$</span>biasLm <span class="o">&lt;-</span> dat<span class="o">$</span>lm <span class="o">-</span> dat<span class="o">$</span>popMean
+dat<span class="o">$</span>biasMean <span class="o">&lt;-</span> dat<span class="o">$</span>mean <span class="o">-</span> dat<span class="o">$</span>popMean
+datEval <span class="o">&lt;-</span> melt<span class="p">(</span>dat<span class="p">[</span><span class="kt">c</span><span class="p">(</span><span class="s">&quot;biasLm&quot;</span><span class="p">,</span> <span class="s">&quot;biasMean&quot;</span><span class="p">)])</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## No id variables; using all as measure variables</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">boxplot<span class="p">(</span>value <span class="o">~</span> variable<span class="p">,</span> data <span class="o">=</span> datEval<span class="p">,</span> horizontal<span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span></code></pre></div>
+
+<p><img src="/journal/images/images/2014-06-03-Simulations-in-Small-Area-Estimation/unnamed-chunk-6-1.png" title="center" alt="center" width="100%" /></p>
+
+<h2 id="how-to-get-started">How to get started</h2>
+<p>If you have come this far and in the case you are still interested in what this is about, go to the <a href="/journal/saeSim">homepage of saeSim</a>, install the package, checkout the vignette, add comments here or on <a href="https://github.com/wahani/saeSim">GitHub</a>…</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Sebastian Warnholz</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-03T00:00:00+02:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/journal/blog/categories/sae/'>sae</a>, <a class='category' href='/journal/blog/categories/saesim/'>saesim</a>, <a class='category' href='/journal/blog/categories/simulation/'>simulation</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://wahani.github.io/journal/blog/2014/06/03/Simulations-in-Small-Area-Estimation" data-via="" data-counturl="http://wahani.github.io/journal/blog/2014/06/03/Simulations-in-Small-Area-Estimation" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/journal/blog/2014/06/15/Functional-Programming-with-lambdar" title="Next Post: Functional programming with lambda.r">Functional programming with lambda.r &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+  <aside class="sidebar">
+   
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:wahani.github.io/journal" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/journal/blog/2015/01/26/Notes">2015-01-26-Notes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/journal/blog/2015/01/22/notes">2015-01-22 Notes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/journal/blog/2015/01/13/Setup-Jekyll-Octopress-and-knitr-for-workflow">Setup Jekyll Octopress and Knitr for Workflow</a>
+      </li>
+    
+      <li class="post">
+        <a href="/journal/blog/2014/06/15/Functional-Programming-with-lambdar">Functional Programming With lambda.r</a>
+      </li>
+    
+      <li class="post">
+        <a href="/journal/blog/2014/06/03/Simulations-in-Small-Area-Estimation">saeSim: Simulation Tools in Small Area Estimation</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/wahani">@wahani</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'wahani',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/journal/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Sebastian Warnholz -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+<script>
+  $(document).ready(function() {  
+  var stickyNavTop = $('nav').offset().top;  
+    
+  var stickyNav = function(){  
+  var scrollTop = $(window).scrollTop();  
+         
+  if (scrollTop > stickyNavTop) {   
+      $('nav').addClass('sticky');  
+  } else {  
+      $('nav').removeClass('sticky');   
+  }  
+  };  
+    
+  stickyNav();  
+    
+  $(window).scroll(function() {  
+      stickyNav();  
+  });  
+  });  
+</script>
+
+
+</body>
+</html>

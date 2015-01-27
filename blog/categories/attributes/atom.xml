@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Attributes | Journal]]></title>
+  <link href="http://wahani.github.io/journal/blog/categories/attributes/atom.xml" rel="self"/>
+  <link href="http://wahani.github.io/journal/"/>
+  <updated>2015-01-27T17:55:37+01:00</updated>
+  <id>http://wahani.github.io/journal/</id>
+  <author>
+    <name><![CDATA[Sebastian Warnholz]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[2015-01-26-Notes]]></title>
+    <link href="http://wahani.github.io/journal/blog/2015/01/26/Notes"/>
+    <updated>2015-01-26T00:00:00+01:00</updated>
+    <id>http://wahani.github.io/journal/blog/2015/01/26/Notes</id>
+    <content type="html"><![CDATA[<h1 id="how-to-preserve-attributes-of-a-dataframe">How to preserve attributes of a data.frame</h1>
+
+<p>In the following we have two expressions in which the attributes of a data.frame will be lost.</p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">dat <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kt">data.frame</span><span class="p">(</span>x <span class="o">=</span> <span class="m">1</span><span class="o">:</span><span class="m">10</span><span class="p">,</span> y <span class="o">=</span> “”<span class="p">)</span>
+<span class="kp">attr</span><span class="p">(</span>dat<span class="p">,</span> “newAttr”<span class="p">)</span> <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="m">5</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>h1 id<span class="o">=</span><span class="s">&quot;works&quot;</span><span class="o">&gt;</span>works<span class="o">:&lt;/</span>h1<span class="o">&gt;</span>
+<span class="o">&lt;</span>p<span class="o">&gt;</span><span class="kp">attributes</span><span class="p">(</span>dat<span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">,])</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## $names
+## [1] “x” “y”
+## 
+## $newAttr
+## [1] 5
+## 
+## $row.names
+## [1] 1 2 3 4 5
+## 
+## $class
+## [1] “data.frame”</code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># dplyr is evil</span>
+<span class="kp">attributes</span><span class="p">(</span>dplyr<span class="o">::</span>filter<span class="p">(</span>dat<span class="p">,</span> x <span class="o">%in%</span> <span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">))</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## $class
+## [1] “data.frame”
+## 
+## $row.names
+## [1] 1 2 3 4 5
+## 
+## $names
+## [1] “x” “y”</code></pre></div></p>
+
+<p>Can we avoid this by using a S4 data.frame?</p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>methods<span class="p">)</span>
+S4df <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> setClass<span class="p">(</span>
+    “S4df”<span class="p">,</span> 
+    contains <span class="o">=</span> “<span class="kt">data.frame</span>”<span class="p">,</span> 
+    slots <span class="o">=</span> <span class="kt">list</span><span class="p">(</span>“<span class="kp">attributes</span>” <span class="o">=</span> “<span class="kt">list</span>”<span class="p">)</span>
+    <span class="p">)</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>s4dat <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> S4df<span class="p">(</span>dat<span class="p">,</span> attributes <span class="o">=</span> <span class="kp">attributes</span><span class="p">(</span>dat<span class="p">))</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span><span class="kp">attributes</span><span class="p">(</span>dplyr<span class="o">::</span>filter<span class="p">(</span>s4dat<span class="p">,</span> x <span class="o">%in%</span> <span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">))</span> <span class="c1"># does not work…</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## Error in eval(expr, envir, enclos): could not convert using R function : as.data.frame</code></pre></div></p>
+
+<h2 id="okay-functional-programming">Okay, functional programming…</h2>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">preserve_attributes <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>fun<span class="p">)</span> <span class="p">{</span>
+    <span class="kp">force</span><span class="p">(</span>fun<span class="p">)</span>
+    <span class="kr">function</span><span class="p">(</span>dat<span class="p">)</span> <span class="p">{</span>
+        attOfX <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kp">attributes</span><span class="p">(</span>dat<span class="p">)</span>
+        res <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> fun<span class="p">(</span>dat<span class="p">)</span>
+        attOfRes <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kp">attributes</span><span class="p">(</span>res<span class="p">)</span>
+        attToPreserve <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kp">names</span><span class="p">(</span>attOfX<span class="p">)[</span><span class="o">!</span><span class="p">(</span><span class="kp">names</span><span class="p">(</span>attOfX<span class="p">)</span> <span class="o">%in%</span> <span class="kp">names</span><span class="p">(</span>attOfRes<span class="p">))]</span>
+        <span class="kp">attributes</span><span class="p">(</span>res<span class="p">)</span> <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kt">c</span><span class="p">(</span><span class="kp">attributes</span><span class="p">(</span>res<span class="p">),</span> <span class="kp">attributes</span><span class="p">(</span>dat<span class="p">)[</span>attToPreserve<span class="p">])</span>
+        res
+    <span class="p">}</span>
+<span class="p">}</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>myFilter <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> preserve_attributes<span class="p">(</span>
+    functional<span class="o">::</span>CurryL<span class="p">(</span>
+        dplyr<span class="o">::</span>filter<span class="p">,</span> “…” <span class="o">=</span> x <span class="o">%in%</span> <span class="m">1</span><span class="o">:</span><span class="m">5</span>
+        <span class="p">)</span>
+    <span class="p">)</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span><span class="kp">attributes</span><span class="p">(</span>myFilter<span class="p">(</span>dat<span class="p">))</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## $class
+## [1] “data.frame”
+## 
+## $row.names
+## [1] 1 2 3 4 5
+## 
+## $names
+## [1] “x” “y”
+## 
+## $newAttr
+## [1] 5</code></pre></div></p>
+
+]]></content>
+  </entry>
+  
+</feed>

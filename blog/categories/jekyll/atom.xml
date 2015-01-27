@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Jekyll | Journal]]></title>
+  <link href="http://wahani.github.io/journal/blog/categories/jekyll/atom.xml" rel="self"/>
+  <link href="http://wahani.github.io/journal/"/>
+  <updated>2015-01-27T17:55:37+01:00</updated>
+  <id>http://wahani.github.io/journal/</id>
+  <author>
+    <name><![CDATA[Sebastian Warnholz]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Setup Jekyll Octopress and Knitr for Workflow]]></title>
+    <link href="http://wahani.github.io/journal/blog/2015/01/13/Setup-Jekyll-Octopress-and-knitr-for-workflow"/>
+    <updated>2015-01-13T00:00:00+01:00</updated>
+    <id>http://wahani.github.io/journal/blog/2015/01/13/Setup-Jekyll-Octopress-and-knitr-for-workflow</id>
+    <content type="html"><![CDATA[<p>Hello!</p>
+
+<h2 id="requirements">Requirements</h2>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">install.packages<span class="p">(</span>
+  <span class="kt">c</span><span class="p">(</span>‘servr’<span class="p">,</span> ‘knitr’<span class="p">),</span>
+  type <span class="o">=</span> ‘<span class="kn">source</span>’<span class="p">,</span>
+  repos <span class="o">=</span> <span class="kt">c</span><span class="p">(</span>‘http<span class="o">://</span>yihui.name<span class="o">/</span>xran’<span class="p">,</span> ‘http<span class="o">://</span>cran.rstudio.com’<span class="p">)</span>
+<span class="p">)</span></code></pre></div></p>
+
+<h2 id="in-rstudio">In RStudio</h2>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">servr<span class="o">::</span>jekyll<span class="p">(</span>input <span class="o">=</span> “_rmd”<span class="p">,</span> output <span class="o">=</span> “<span class="kn">source</span><span class="o">/</span>_posts”<span class="p">)</span></code></pre></div></p>
+
+]]></content>
+  </entry>
+  
+</feed>
