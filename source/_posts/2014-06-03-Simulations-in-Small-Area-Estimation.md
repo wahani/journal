@@ -14,7 +14,8 @@ In this post I want to introduce the package [saeSim](/saeSim). The package impr
 ## General idea and workflow
 As I was writing my scripts for simulation I typically ended up using loop structures every second line. Every time I wanted to add or change something, I appended new lines to the script which then needed to iterate over my data. Consider a simple task: Predict a population mean and compare the bias of a linear model and sample average. Repeat this 100 times. The task is clear, simulate 100 populations, compute the mean in each population, draw a sample from each population apply the two models on the samples and estimate the population mean.
 
-```{r}
+
+{% highlight r %}
 library(reshape2)
 
 # Generate data
@@ -49,8 +50,21 @@ dat$biasLm <- dat$lm - dat$popMean
 dat$biasMean <- dat$mean - dat$popMean
 
 datEval <- melt(dat[c("biasLm", "biasMean")])
+{% endhighlight %}
+
+
+
+{% highlight text %}
+## No id variables; using all as measure variables
+{% endhighlight %}
+
+
+
+{% highlight r %}
 boxplot(value ~ variable, data = datEval, horizontal=TRUE)
-```
+{% endhighlight %}
+
+<img src="/images/images/2014-06-03-Simulations-in-Small-Area-Estimation/unnamed-chunk-1-1.png" title="center" alt="center" width="100%" />
 
 Imagine this style of writing with more complex data and models and hundreds or thousands of lines of code. Reproducing yourself is a mess, let alone find bugs, mistakes, etc. Another issue is that a lot of effort is needed to parallelize the computation. I would need to replace every looping structure with a parallel version. And furthermore the real task is shadowed by all kinds of unnecessary control structures. The idea to overcome this was to write one function which would do the data generation and computation on that data. That would lead only to one loop and to a potentially long function for simulation -- although it is not a problem to split the task step-wise into smaller functions which would be called in the 'main' simulation function. In the end this is what I tried with saeSim. I identified the repeating steps and built a framework so I can easily set-up simulations without thinking about the structure and more about the statistical problem.
 
@@ -66,43 +80,79 @@ In all I have 6 steps I can part my simulation into.
 
 The purpose of these functions is simply to control the flow of the simulation and they all take a function as argument. In other words all of these functions control *when* a function is called -- you can decide which function that will be. Let's see how things add up for a simple data generation scenario:
 
-```{r}
+
+{% highlight r %}
 # devtools::install_github("wahani/saeSim")
 library(saeSim)
+{% endhighlight %}
 
+
+
+{% highlight text %}
+## Loading required package: methods
+## Documentation is available at wahani.github.io/saeSim
+{% endhighlight %}
+
+
+
+{% highlight r %}
 # Generating a population with 100 domains and 100 units in each domain:
 setup <- base_id(100, 100) %>%
   # Variable x and error component e
   sim_gen_x(sd = 1) %>%
   sim_gen_e(sd = 1) %>%
   sim_resp_eq(y = 100 + 2 * x + e)
-  
-```
+{% endhighlight %}
 
 To inspect `setup` I have a `plot`, `autoplot`, `summary` and `show` method.
 
-```{r}
+
+{% highlight r %}
 setup
-```
+{% endhighlight %}
+
+
+
+{% highlight text %}
+##   idD idU           x           e         y
+## 1   1   1  0.37848715 -0.56426537 100.19271
+## 2   1   2 -0.03322072  0.03155332  99.96511
+## 3   1   3  0.69302346 -0.91341329 100.47263
+## 4   1   4  0.70192788 -1.14242630 100.26143
+## 5   1   5  0.88992447 -0.44572650 101.33412
+## 6   1   6 -0.72537724  1.60834101 100.15759
+{% endhighlight %}
 
 Note that the response 'y' will always be constructed automatically. To visualize the data, the plot method will always try to find 'y' and plot it against the first variable found.
 
-```{r}
+
+{% highlight r %}
 plot(setup)
+{% endhighlight %}
+
+<img src="/images/images/2014-06-03-Simulations-in-Small-Area-Estimation/unnamed-chunk-4-1.png" title="center" alt="center" width="100%" />
+
+{% highlight r %}
 # What happens if I add contamination to the error:
 plot(setup %>% sim_gen_ec())
-```
+{% endhighlight %}
+
+<img src="/images/images/2014-06-03-Simulations-in-Small-Area-Estimation/unnamed-chunk-4-2.png" title="center" alt="center" width="100%" />
 
 In contrast the `autoplot` function will use ggplot2 and will plot a two dimensional density estimate, very much like `smoothScatter`.
 
-```{r}
+
+{% highlight r %}
 autoplot(setup)
-```
+{% endhighlight %}
+
+<img src="/images/images/2014-06-03-Simulations-in-Small-Area-Estimation/unnamed-chunk-5-1.png" title="center" alt="center" width="100%" />
 
 ## Back to the introductory example
 So how does my scripting change using `saeSim`. I have some data generation interfaces which are a bit clumsy in this setting, they make my coding clearer in more complex scenarios. My simulation components are connected using the `%&%` operator. So even complex tasks can be split into several lines to maintain readability. The set-up is separated from the actual repetition, which allows to construct more complex designs and test them easily as I add new steps and components to the scenario.
 
-```{r}
+
+{% highlight r %}
 # Population with 1 domain and 100 units
 setup <- base_id(1, 100) %>%
   # y = 100 + 2*x + e
@@ -125,7 +175,18 @@ setup <- base_id(1, 100) %>%
     })
 
 setup
+{% endhighlight %}
 
+
+
+{% highlight text %}
+##         lm     mean  popMean
+## 1 100.5592 100.5592 99.80724
+{% endhighlight %}
+
+
+
+{% highlight r %}
 # Running the simulation
 res <- sim(setup, R = 100)
 
@@ -134,9 +195,21 @@ dat <- do.call(rbind, res)
 dat$biasLm <- dat$lm - dat$popMean
 dat$biasMean <- dat$mean - dat$popMean
 datEval <- melt(dat[c("biasLm", "biasMean")])
-boxplot(value ~ variable, data = datEval, horizontal=TRUE)
+{% endhighlight %}
 
-```
+
+
+{% highlight text %}
+## No id variables; using all as measure variables
+{% endhighlight %}
+
+
+
+{% highlight r %}
+boxplot(value ~ variable, data = datEval, horizontal=TRUE)
+{% endhighlight %}
+
+<img src="/images/images/2014-06-03-Simulations-in-Small-Area-Estimation/unnamed-chunk-6-1.png" title="center" alt="center" width="100%" />
 
 ## How to get started
 If you have come this far and in the case you are still interested in what this is about, go to the [homepage of saeSim](/saeSim), install the package, checkout the vignette, add comments here or on [GitHub](https://github.com/wahani/saeSim)...

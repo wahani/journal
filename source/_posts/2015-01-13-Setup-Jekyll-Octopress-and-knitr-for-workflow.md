@@ -9,17 +9,19 @@ Hello!
 
 ## Requirements
 
-```{r, eval=FALSE}
+
+{% highlight r %}
 install.packages(
   c('servr', 'knitr'),
   type = 'source',
   repos = c('http://yihui.name/xran', 'http://cran.rstudio.com')
 )
-```
+{% endhighlight %}
 
 ## In RStudio
 
-```{r, eval=FALSE}
+
+{% highlight r %}
 servr::jekyll(input = "_rmd", output = "source/_posts")
-```
+{% endhighlight %}
 
