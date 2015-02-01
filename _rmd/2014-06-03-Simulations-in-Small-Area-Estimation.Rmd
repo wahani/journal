@@ -1,21 +1,16 @@
 ---
 layout: post
-published: false
+published: true
 title: "saeSim: Simulation Tools in Small Area Estimation"
 description: "A short introduction of the R-Package saeSim. Tools for model- and design based simulations in the field of Small Area Estimation."
 comments: true
-math: true
-modified: 
-filename: 2014-06-03-Simulations-in-Small-Area-Estimation
-categories: [R, programming, SAE]
-tags: [R, saeSim, small area estimation, simulation]
-image:
-  feature: 
-  credit: 
-  creditlink: 
+categories: saeSim sae simulation
 ---
 
-In this post I want to introduce the package [`saeSim`](/saeSim). The package improved my set-up of design-based and model-based simulation scenarios in the context of Small Area Estimation. It introduces components with which the flow of the simulation is framed and supports a unified structure and interface between each step.
+In this post I want to introduce the package [saeSim](/saeSim). The package improved my set-up of design-based and model-based simulation scenarios in the context of Small Area Estimation. It introduces components with which the flow of the simulation is framed and supports a unified structure and interface between each step.
+
+
+<!--more-->
 
 ## General idea and workflow
 As I was writing my scripts for simulation I typically ended up using loop structures every second line. Every time I wanted to add or change something, I appended new lines to the script which then needed to iterate over my data. Consider a simple task: Predict a population mean and compare the bias of a linear model and sample average. Repeat this 100 times. The task is clear, simulate 100 populations, compute the mean in each population, draw a sample from each population apply the two models on the samples and estimate the population mean.
@@ -77,10 +72,11 @@ The purpose of these functions is simply to control the flow of the simulation a
 library(saeSim)
 
 # Generating a population with 100 domains and 100 units in each domain:
-setup <- sim_base_standard(100, 100) %&%
+setup <- base_id(100, 100) %>%
   # Variable x and error component e
-  sim_gen(gen_norm(0, 1), const = 100, slope = 2, name = "x") %&%
-  sim_gen(gen_norm(0, 1), name="e")
+  sim_gen_x(sd = 1) %>%
+  sim_gen_e(sd = 1) %>%
+  sim_resp_eq(y = 100 + 2 * x + e)
   
 ```
 
@@ -95,13 +91,12 @@ Note that the response 'y' will always be constructed automatically. To visualiz
 ```{r}
 plot(setup)
 # What happens if I add contamination to the error:
-plot(setup %&% sim_gen_ec())
+plot(setup %>% sim_gen_ec())
 ```
 
 In contrast the `autoplot` function will use ggplot2 and will plot a two dimensional density estimate, very much like `smoothScatter`.
 
 ```{r}
-library(ggplot2)
 autoplot(setup)
 ```
 
@@ -110,16 +105,17 @@ So how does my scripting change using `saeSim`. I have some data generation inte
 
 ```{r}
 # Population with 1 domain and 100 units
-setup <- sim_base_standard(1, 100) %&%
+setup <- base_id(1, 100) %>%
   # y = 100 + 2*x + e
-  sim_gen(gen_norm(0, 1), const = 100, slope = 2, name = "x") %&%
-  sim_gen(gen_norm(0, 1), name = "e") %&%
+  sim_gen(gen_norm(0, 1, "x")) %>%
+  sim_gen(gen_norm(0, 1, "e")) %>%
+  sim_resp_eq(y = 100 + 2 * x + e) %>%
   # Keeping the mean of y
-  sim_popMean() %&%
+  sim_comp_popMean() %>%
   # Drawing a simple random sample with n = 20
-  sim_sample(sample_srs(20)) %&%
+  sim_sample(sample_number(20)) %>%
   # Computing the estimated parameters
-  sim_calc(function(dat) {
+  sim_comp_sample(function(dat) {
     fancyModel <- lm(y ~ x, data = dat)
     out <- data.frame(
       lm = predict(fancyModel, data.frame(x = mean(dat$x))),
@@ -127,7 +123,7 @@ setup <- sim_base_standard(1, 100) %&%
       popMean = mean(dat$popMean)
       )
     out
-    }, level = "sample")
+    })
 
 setup
 

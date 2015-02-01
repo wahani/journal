@@ -1,11 +1,10 @@
 ---
 layout: post
-published: false
 comments: true
 title: Functional programming with lambda.r
 description: "Exploring the R-package lambda.r and a functional programming style for data manipulation."
-categories: [R, programming]
-tags: [R, Functional programming, lambda.r]
+filename: "2014-06-15-Functional-Programming-with-lambdar"
+categories: [fp, lambda.r]
 ---
 
 My first post was on [S4-methods](/Introducing-S4-Methods/) and how I could add new features to a function without changing it -- using function dispatch in S4. This works out fine, but is not optimal for me. 
@@ -17,7 +16,7 @@ My first post was on [S4-methods](/Introducing-S4-Methods/) and how I could add 
 - And S4 is not playing nice with roxygen2, it took me hours to adjust my workflow
 
 So I wanted to get back to the functional programming techniques available in R. Here [lambda.r](http://cran.r-project.org/web/packages/lambda.r/index.html) seems to be a nice addition to what R already offers. Especially the capability of dispatching functions. So here is an example.
-
+<!--more-->
 ## Example function
 
 ```{r}
