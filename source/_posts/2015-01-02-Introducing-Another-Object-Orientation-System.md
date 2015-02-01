@@ -14,6 +14,7 @@ image:
   creditlink: 
 ---
 
+
 R has more than enough systems for object orientation and here is yet another one. *S3* and *S4* are the build in systems. [R.oo](http://cran.r-project.org/web/packages/R.oo/index.html) has been developed since 2001; [proto](http://cran.r-project.org/web/packages/proto/index.html) since 2005; and [R6](http://cran.r-project.org/web/packages/R6/index.html) is the newest and published to CRAN in 2014.
 
 What I wanted to have is a system where method definitions are part of the class definition. Something which forces me to define functions belonging to one concept in one place, however, I don't feel comfortable to define them inside lists. Furthermore I wanted to have auto-complete in R. So here I present my solution for your consideration. See also the [vignette for the package](http://wahani.github.io/aoos/vignettes/Introduction.html) if you should be interested in some more details.
@@ -47,7 +48,18 @@ Directory <- defineClass("Directory", {
   })
 
 })
+{% endhighlight %}
 
+
+
+{% highlight text %}
+## Warning in getPackageName(where): Created a package name, '2015-01-13
+## 23:07:16', when none found
+{% endhighlight %}
+
+
+
+{% highlight r linenos %}
 setMethod("show", "Directory",
           function(object) {
             print(file.info(dir(object$getDirName(), full.names = TRUE))[c("size", "mtime")])
@@ -90,8 +102,8 @@ foo
 
 {% highlight text %}
 ##                      size               mtime
-## foo/someData.txt      292 2015-01-02 15:13:18
-## foo/someMoreData.txt  292 2015-01-02 15:13:18
+## foo/someData.txt      292 2015-01-13 23:07:16
+## foo/someMoreData.txt  292 2015-01-13 23:07:16
 {% endhighlight %}
 
 
@@ -118,7 +130,7 @@ foo
 
 {% highlight text %}
 ##                  size               mtime
-## foo/someData.txt  292 2015-01-02 15:13:18
+## foo/someData.txt  292 2015-01-13 23:07:16
 {% endhighlight %}
 
 
@@ -133,7 +145,7 @@ foo
 
 {% highlight text %}
 ## [1] size  mtime
-## <0 rows> (or 0-length row.names)
+## <0 Zeilen> (oder row.names mit Länge 0)
 {% endhighlight %}
 
 

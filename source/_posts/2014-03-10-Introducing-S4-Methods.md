@@ -26,13 +26,13 @@ summary(dat)
 
 
 {% highlight text %}
-##        x                y          
-##  Min.   :-1.266   Min.   :-0.4643  
-##  1st Qu.:-0.864   1st Qu.:-0.0644  
-##  Median : 0.122   Median : 0.5357  
-##  Mean   : 0.339   Mean   : 0.5551  
-##  3rd Qu.: 1.116   3rd Qu.: 1.0491  
-##  Max.   : 2.929   Max.   : 1.5739
+##        x                  y           
+##  Min.   :-1.89235   Min.   :-1.86870  
+##  1st Qu.:-1.14968   1st Qu.:-0.75013  
+##  Median : 0.61491   Median :-0.05573  
+##  Mean   : 0.04012   Mean   : 0.03316  
+##  3rd Qu.: 1.03095   3rd Qu.: 0.56215  
+##  Max.   : 1.29280   Max.   : 2.82742
 {% endhighlight %}
 
 
@@ -50,18 +50,16 @@ summary(lm(y ~ x, dat))
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -0.9672 -0.6559  0.0225  0.4686  1.0728 
+## -1.7735 -0.6339 -0.1149  0.3188  2.9026 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value Pr(>|t|)  
-## (Intercept)    0.604      0.254    2.38    0.044 *
-## x             -0.144      0.183   -0.79    0.453  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+##             Estimate Std. Error t value Pr(>|t|)
+## (Intercept)   0.0383     0.4285   0.089    0.931
+## x            -0.1282     0.3619  -0.354    0.732
 ## 
-## Residual standard error: 0.778 on 8 degrees of freedom
-## Multiple R-squared:  0.0721,	Adjusted R-squared:  -0.0439 
-## F-statistic: 0.621 on 1 and 8 DF,  p-value: 0.453
+## Residual standard error: 1.354 on 8 degrees of freedom
+## Multiple R-squared:  0.01545,	Adjusted R-squared:  -0.1076 
+## F-statistic: 0.1255 on 1 and 8 DF,  p-value: 0.7323
 {% endhighlight %}
 
 ### a method
@@ -82,7 +80,8 @@ mean("Hello!")
 
 
 {% highlight text %}
-## Warning: argument is not numeric or logical: returning NA
+## Warning in mean.default("Hello!"): Argument ist weder numerisch noch
+## boolesch: gebe NA zurück
 {% endhighlight %}
 
 
@@ -117,11 +116,21 @@ data(InsectSprays)
 setMethod("plot", signature(x="factor", y="numeric"),
   function(x,  y, ...) boxplot(y ~ x, ...)
 )
+{% endhighlight %}
 
+
+
+{% highlight text %}
+## Creating a generic function for 'plot' from package 'graphics' in package 'base'
+{% endhighlight %}
+
+
+
+{% highlight r linenos %}
 plot(InsectSprays$spray, InsectSprays$count)
 {% endhighlight %}
 
-<img src="/../figs/2014-03-10-Introducing-S4-Methods/unnamed-chunk-4.png" title="center" alt="center" width="100%" />
+<img src="/figs/2014-03-10-Introducing-S4-Methods/unnamed-chunk-4-1.png" title="center" alt="center" width="100%" />
 
 Writing generics
 ----------------
@@ -142,12 +151,12 @@ filterMe("A", dat, "someFactor")
 
 
 {% highlight text %}
-##         x       y someFactor
-## 1 -1.2658  0.9582          A
-## 3 -0.1722  1.5739          A
-## 5  0.8172  1.5590          A
-## 7 -0.9507 -0.2263          A
-## 9 -0.6027  1.0314          A
+##            x           y someFactor
+## 1 -1.8923489  0.44346277          A
+## 3 -0.6182543 -1.13524056          A
+## 5  1.1758795 -0.87959616          A
+## 7 -1.3268166 -0.01444823          A
+## 9  1.0009824 -0.09700262          A
 {% endhighlight %}
 Then later in development I discover, that there are actually arguments which should not be of length 1. Typically I already use the function in more than one place and want to preserve its behaviour, so I do not want to change it.
 
@@ -193,12 +202,12 @@ filterMe("A", dat, "someFactor")
 
 
 {% highlight text %}
-##         x       y someFactor
-## 1 -1.2658  0.9582          A
-## 3 -0.1722  1.5739          A
-## 5  0.8172  1.5590          A
-## 7 -0.9507 -0.2263          A
-## 9 -0.6027  1.0314          A
+##            x           y someFactor
+## 1 -1.8923489  0.44346277          A
+## 3 -0.6182543 -1.13524056          A
+## 5  1.1758795 -0.87959616          A
+## 7 -1.3268166 -0.01444823          A
+## 9  1.0009824 -0.09700262          A
 {% endhighlight %}
 
 Now what I want is a function which filters a `data.frame`, for several variables with different levels. In this case I want the argument `varname` to be a named list, where the name is the variable and the value the level to filter for.
@@ -230,8 +239,7 @@ filterMe(dat, list("someFactor" = "A", "anotherFactor" = "B"))
 
 
 {% highlight text %}
-##        x     y someFactor anotherFactor
-## 5 0.8172 1.559          A             B
+## Error in dat[, varname]: falsche Anzahl von Dimensionen
 {% endhighlight %}
 
 Note that I can reuse the previously defined method `filterMe` for the class `character` so that the function body is straight forward. In general I find this to be a nice addition to my toolbox and will take advantage of it to reduce the number of function names I have to come up with.
