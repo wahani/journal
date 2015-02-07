@@ -19,4 +19,8 @@ watch:
 clean:
 	rm -fv -r images
 
-.PHONY: clean watch
+deploy:
+	rake generate
+	rake deploy
+
+.PHONY: clean watch deploy
