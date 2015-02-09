@@ -20,6 +20,7 @@ clean:
 	rm -fv -r images
 
 deploy:
+	make all
 	rake generate
 	rake deploy
 
