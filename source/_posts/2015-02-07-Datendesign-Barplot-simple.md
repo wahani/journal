@@ -7,15 +7,13 @@ bibliography:
 output: wahaniMiscs:::pdf_memo
 ---
 
-```{r echo=FALSE}
-# library(knitr)
-# opts_knit$set(root.dir = "..")
-```
+
 
 # Barplot simple
 
 ## Preparing data
-```{r}
+
+{% highlight r %}
 ipsos <- read.csv2("data/alle_daten/ipsos.csv")
 ipsos <- ipsos[order(ipsos$Wert),]
 ipsos$Land <- ordered(ipsos$Land, ipsos$Land)
@@ -29,11 +27,12 @@ rect <- data.frame(ymin = seq(0, 80, 20),
            colour = rep(c(grDevices::rgb(191,239,255,80,maxColorValue=255),
                           grDevices::rgb(191,239,255,120,maxColorValue=255)), 
                         length.out = 5))
-```
+{% endhighlight %}
 
 ## barplot layers
 
-```{r message=FALSE}
+
+{% highlight r %}
 library(ggplot2)
 ggBar <- ggplot(ipsos) + 
   geom_bar(aes(x = Land, y = Wert), stat = "identity", fill = "grey") + 
@@ -66,14 +65,20 @@ ggBar + theme(panel.grid.minor = element_blank(),
                 hjust = -0.7,
                 vjust = 1),
               text = element_text(family = "Lato Light"))
-
-
-```
+{% endhighlight %}
 
 
 
-```{r eval=FALSE}
+{% highlight text %}
+## Warning: Removed 14 rows containing missing values (position_stack).
+{% endhighlight %}
 
+<img src="/images/images/2015-02-07-Datendesign-Barplot-simple/unnamed-chunk-3-1.png" title="center" alt="center" width="100%" />
+
+
+
+
+{% highlight r %}
 # weitere Elemente
 
 
@@ -87,5 +92,5 @@ mtext(c(0,20,40,60,80,100),at=c(0,20,40,60,80,100),1,line=0,cex=0.80)
 mtext("'Ich glaube fest an Gott oder ein höheres Wesen'",3,line=1.3,adj=0,cex=1.2,family="Lato Black",outer=T)
 mtext("...sagten 2010 in:",3,line=-0.4,adj=0,cex=0.9,outer=T)
 mtext("Quelle: www.ipsos-na.com, Design: Stefan Fichtel, ixtract",1,line=1,adj=1.0,cex=0.65,outer=T,font=3)
-```
+{% endhighlight %}
 
