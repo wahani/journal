@@ -7,7 +7,7 @@ filename: "2014-06-15-Functional-Programming-with-lambdar"
 categories: [fp, lambda.r]
 ---
 
-My first post was on [S4-methods](/Introducing-S4-Methods/) and how I could add new features to a function without changing it -- using function dispatch in S4. This works out fine, but is not optimal for me. 
+My first post was on [S4-methods](/Introducing-S4-Methods/) and how I could add new features to a function without changing it -- using function dispatch in S4. This works out fine, but is not optimal for me.
 
 - The function `setMethod` introduces code which is dificult to read
 - The dispatch uses classes not attributes or different conditions for dispatch
@@ -38,23 +38,23 @@ applyFun(dat, "x", mean, "group")
 
 {% highlight text %}
 ##             x group
-## 1.1  2.022477     1
-## 1.2  2.022477     1
-## 1.3  2.022477     1
-## 1.4  2.022477     1
-## 1.5  2.022477     1
-## 2.6  4.323756     2
-## 2.7  4.323756     2
-## 2.8  4.323756     2
-## 2.9  4.323756     2
-## 2.10 4.323756     2
+## 1.1  2.481702     1
+## 1.2  2.481702     1
+## 1.3  2.481702     1
+## 1.4  2.481702     1
+## 1.5  2.481702     1
+## 2.6  4.930705     2
+## 2.7  4.930705     2
+## 2.8  4.930705     2
+## 2.9  4.930705     2
+## 2.10 4.930705     2
 {% endhighlight %}
 
 The function `applyFun` will apply `fun` on a subset denoted by `group` and the variable `var`. This may be usefull if you do transformations on single variables which are different in each group, or you do not want your data collapsed, i.e. preserve the original number of rows. `group` for example can be a chracter with `length > 1`, I can plug in any function wich will return a scalar or a vector with the length of the input. However, it will only work on a single variable in the data, so `var` schould have length 1. I could try something with `[` instead of `[[` for subsetting but then the requirements for `fun` will change and I do want to preserve the behaviour of `applyFun`.
 
 ## How can lambda.r help?
 
-There are different possibilities to allow vectors in the argument `var` of `applyFun`:       
+There are different possibilities to allow vectors in the argument `var` of `applyFun`:
 * rewrite `applyFun`
 * write a new function calling `applyFun`
 * write a function called `applyFun` calling the version of `applyFun` where `var` is a scalar: use the function dispatch introduced in lambda.r
@@ -92,16 +92,16 @@ applyFun(dat, "x", mean, "group")
 
 {% highlight text %}
 ##             x group
-## 1.1  2.022477     1
-## 1.2  2.022477     1
-## 1.3  2.022477     1
-## 1.4  2.022477     1
-## 1.5  2.022477     1
-## 2.6  4.323756     2
-## 2.7  4.323756     2
-## 2.8  4.323756     2
-## 2.9  4.323756     2
-## 2.10 4.323756     2
+## 1.1  2.481702     1
+## 1.2  2.481702     1
+## 1.3  2.481702     1
+## 1.4  2.481702     1
+## 1.5  2.481702     1
+## 2.6  4.930705     2
+## 2.7  4.930705     2
+## 2.8  4.930705     2
+## 2.9  4.930705     2
+## 2.10 4.930705     2
 {% endhighlight %}
 
 
@@ -115,16 +115,16 @@ applyFun(dat, c("x", "y"), mean, "group")
 
 {% highlight text %}
 ##               x group          y
-## 1.1.1  2.022477     1  0.5764622
-## 1.1.2  2.022477     1  0.5764622
-## 1.1.3  2.022477     1  0.5764622
-## 1.1.4  2.022477     1  0.5764622
-## 1.1.5  2.022477     1  0.5764622
-## 2.2.6  4.323756     2 -0.3486055
-## 2.2.7  4.323756     2 -0.3486055
-## 2.2.8  4.323756     2 -0.3486055
-## 2.2.9  4.323756     2 -0.3486055
-## 2.2.10 4.323756     2 -0.3486055
+## 1.1.1  2.481702     1 -0.7070260
+## 1.1.2  2.481702     1 -0.7070260
+## 1.1.3  2.481702     1 -0.7070260
+## 1.1.4  2.481702     1 -0.7070260
+## 1.1.5  2.481702     1 -0.7070260
+## 2.2.6  4.930705     2 -0.5315593
+## 2.2.7  4.930705     2 -0.5315593
+## 2.2.8  4.930705     2 -0.5315593
+## 2.2.9  4.930705     2 -0.5315593
+## 2.2.10 4.930705     2 -0.5315593
 {% endhighlight %}
 
 With `%when%` I introduce a condition, or multiple conditions, which needs to evaluate to `TRUE`. If it does the function body introduced by `%as%` is evaluated exactly like before. So I am generating a couple of more lines, but I can reuse the function body of the original `applyFun` definition. The second definition of `applyFun` is what will be called if `length(var) != 1`. So something like the else statement in a if-else clause. Like in a if-else control structure the order is important. So either I control access using a second `%when%` or the definition needs to be after the '`length(var) == 1`' version, which I did here.

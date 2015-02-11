@@ -3,7 +3,7 @@ layout: post
 title: "2015-01-22 Notes"
 author: "Sebastian"
 categories: fp
-bibliography: 
+bibliography:
 output: wahaniMiscs:::pdf_memo
 ---
 
@@ -43,5 +43,3 @@ And a test:
 vec_mean <- lapply_wrapper(mean, unlist)
 vec_mean(list(1:5, 2:10))
 ```
-
-

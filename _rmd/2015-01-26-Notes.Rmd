@@ -3,7 +3,7 @@ layout: post
 title: "2015-01-26-Notes"
 author: "Sebastian"
 categories: S4, attributes
-bibliography: 
+bibliography:
 output: wahaniMiscs:::pdf_memo
 ---
 
@@ -29,8 +29,8 @@ Can we avoid this by using a S4 data.frame?
 ```{r, error=TRUE}
 library(methods)
 S4df <- setClass(
-    "S4df", 
-    contains = "data.frame", 
+    "S4df",
+    contains = "data.frame",
     slots = list("attributes" = "list")
     )
 
@@ -66,4 +66,3 @@ myFilter <- preserve_attributes(
 attributes(myFilter(dat))
 
 ```
-

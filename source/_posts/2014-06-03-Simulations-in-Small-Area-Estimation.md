@@ -70,7 +70,7 @@ boxplot(value ~ variable, data = datEval, horizontal=TRUE)
 Imagine this style of writing with more complex data and models and hundreds or thousands of lines of code. Reproducing yourself is a mess, let alone find bugs, mistakes, etc. Another issue is that a lot of effort is needed to parallelize the computation. I would need to replace every looping structure with a parallel version. And furthermore the real task is shadowed by all kinds of unnecessary control structures. The idea to overcome this was to write one function which would do the data generation and computation on that data. That would lead only to one loop and to a potentially long function for simulation -- although it is not a problem to split the task step-wise into smaller functions which would be called in the 'main' simulation function. In the end this is what I tried with saeSim. I identified the repeating steps and built a framework so I can easily set-up simulations without thinking about the structure and more about the statistical problem.
 
 ## A sim_setup
-In all I have 6 steps I can part my simulation into. 
+In all I have 6 steps I can part my simulation into.
 
 - data generation: `sim_gen()`
 - computing on the population: `sim_calc(., level = "population")`
@@ -115,13 +115,13 @@ setup
 
 
 {% highlight text %}
-##   idD idU          x           e         y
-## 1   1   1 -0.2936745  0.41833162  99.83098
-## 2   1   2  1.2569742 -0.96474030 101.54921
-## 3   1   3  0.2044349 -1.33075751  99.07811
-## 4   1   4  0.2617979  0.10603543 100.62963
-## 5   1   5 -0.6024912  0.55230630  99.34732
-## 6   1   6  0.4533176  0.02703708 100.93367
+##   idD idU          x          e         y
+## 1   1   1  0.3153918 -0.7025133  99.92827
+## 2   1   2  0.1968682 -1.0272020  99.36653
+## 3   1   3 -2.2219992 -1.5642642  93.99174
+## 4   1   4  1.9272049  2.3189092 106.17332
+## 5   1   5  0.4566154 -0.7306165 100.18261
+## 6   1   6  1.0991948  0.2066723 102.40506
 {% endhighlight %}
 
 Note that the response 'y' will always be constructed automatically. To visualize the data, the plot method will always try to find 'y' and plot it against the first variable found.
@@ -181,8 +181,8 @@ setup
 
 
 {% highlight text %}
-##        lm    mean  popMean
-## 1 100.977 100.977 100.4657
+##         lm     mean  popMean
+## 1 100.2171 100.2171 100.1091
 {% endhighlight %}
 
 

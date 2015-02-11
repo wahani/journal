@@ -2,8 +2,8 @@
 layout: post
 title: "DatendesignR config"
 author: "Sebastian"
-categories: Datendesign
-bibliography: 
+categories: datendesign
+bibliography:
 output: wahaniMiscs:::pdf_memo
 ---
 
@@ -27,6 +27,3 @@ download.file("http://www.datendesign-r.de/beispielcode.zip",
               "_rmd/data/beispielcode.zip")
 unzip("_rmd/data/beispielcode.zip", exdir = "_rmd/data")
 {% endhighlight %}
-
-
-

@@ -7,7 +7,7 @@ filename: "2014-06-15-Functional-Programming-with-lambdar"
 categories: [fp, lambda.r]
 ---
 
-My first post was on [S4-methods](/Introducing-S4-Methods/) and how I could add new features to a function without changing it -- using function dispatch in S4. This works out fine, but is not optimal for me. 
+My first post was on [S4-methods](/Introducing-S4-Methods/) and how I could add new features to a function without changing it -- using function dispatch in S4. This works out fine, but is not optimal for me.
 
 - The function `setMethod` introduces code which is dificult to read
 - The dispatch uses classes not attributes or different conditions for dispatch
@@ -37,7 +37,7 @@ The function `applyFun` will apply `fun` on a subset denoted by `group` and the 
 
 ## How can lambda.r help?
 
-There are different possibilities to allow vectors in the argument `var` of `applyFun`:       
+There are different possibilities to allow vectors in the argument `var` of `applyFun`:
 * rewrite `applyFun`
 * write a new function calling `applyFun`
 * write a function called `applyFun` calling the version of `applyFun` where `var` is a scalar: use the function dispatch introduced in lambda.r

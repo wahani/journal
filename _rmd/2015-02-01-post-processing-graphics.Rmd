@@ -3,7 +3,7 @@ layout: post
 title: "Post processing graphics"
 author: "Sebastian"
 categories: grapics, design, scribus
-bibliography: 
+bibliography:
 output: wahaniMiscs:::pdf_memo
 ---
 

@@ -56,7 +56,7 @@ boxplot(value ~ variable, data = datEval, horizontal=TRUE)
 Imagine this style of writing with more complex data and models and hundreds or thousands of lines of code. Reproducing yourself is a mess, let alone find bugs, mistakes, etc. Another issue is that a lot of effort is needed to parallelize the computation. I would need to replace every looping structure with a parallel version. And furthermore the real task is shadowed by all kinds of unnecessary control structures. The idea to overcome this was to write one function which would do the data generation and computation on that data. That would lead only to one loop and to a potentially long function for simulation -- although it is not a problem to split the task step-wise into smaller functions which would be called in the 'main' simulation function. In the end this is what I tried with saeSim. I identified the repeating steps and built a framework so I can easily set-up simulations without thinking about the structure and more about the statistical problem.
 
 ## A sim_setup
-In all I have 6 steps I can part my simulation into. 
+In all I have 6 steps I can part my simulation into.
 
 - data generation: `sim_gen()`
 - computing on the population: `sim_calc(., level = "population")`
@@ -77,7 +77,7 @@ setup <- base_id(100, 100) %>%
   sim_gen_x(sd = 1) %>%
   sim_gen_e(sd = 1) %>%
   sim_resp_eq(y = 100 + 2 * x + e)
-  
+
 ```
 
 To inspect `setup` I have a `plot`, `autoplot`, `summary` and `show` method.
