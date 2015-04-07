@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: R | Journal]]></title>
+  <link href="http://wahani.github.io/journal/blog/categories/r/atom.xml" rel="self"/>
+  <link href="http://wahani.github.io/journal/"/>
+  <updated>2015-04-07T17:18:57+02:00</updated>
+  <id>http://wahani.github.io/journal/</id>
+  <author>
+    <name><![CDATA[Sebastian Warnholz]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Split-apply-combine With Dplyr]]></title>
+    <link href="http://wahani.github.io/journal/blog/2014/03/10/split-apply-combine%20with%20dplyr"/>
+    <updated>2014-03-10T00:00:00+01:00</updated>
+    <id>http://wahani.github.io/journal/blog/2014/03/10/split-apply-combine with dplyr</id>
+    <content type="html"><![CDATA[<p><div class="highlight"><pre><code class="language-r" data-lang="r"><span class="lineno">1</span> <span class="kn">library</span><span class="p">(</span>dplyr<span class="p">)</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## 
+## Attache Paket: ‘dplyr’
+## 
+## The following object is masked from ‘package:MASS’:
+## 
+##     select
+## 
+## The following object is masked from ‘package:stats’:
+## 
+##     filter
+## 
+## The following objects are masked from ‘package:base’:
+## 
+##     intersect, setdiff, setequal, union</code></pre></div></p>
+
+]]></content>
+  </entry>
+  
+</feed>

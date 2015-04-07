@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Closures | Journal]]></title>
+  <link href="http://wahani.github.io/journal/blog/categories/closures/atom.xml" rel="self"/>
+  <link href="http://wahani.github.io/journal/"/>
+  <updated>2015-04-07T17:18:57+02:00</updated>
+  <id>http://wahani.github.io/journal/</id>
+  <author>
+    <name><![CDATA[Sebastian Warnholz]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Generic Functions and Closures]]></title>
+    <link href="http://wahani.github.io/journal/blog/2015/03/29/closures-as-generics"/>
+    <updated>2015-03-29T00:00:00+01:00</updated>
+    <id>http://wahani.github.io/journal/blog/2015/03/29/closures-as-generics</id>
+    <content type="html"><![CDATA[<p>How to implement the behavior of generic functions using a closure. Features needed:</p>
+
+<ul>
+  <li>Methods are associated with functions.</li>
+  <li>Method dispatch</li>
+</ul>
+
+<p>What is already there:</p>
+
+<ul>
+  <li>lambda.r</li>
+  <li>S3</li>
+  <li>S4</li>
+</ul>
+
+<p>Why would I want to use a closure instead?</p>
+
+<ul>
+  <li>encapsulation: the existing approaches support the definition of methods at various places in source code. Maybe it would be interesting to encourage the method definition as part of the generic.</li>
+</ul>
+
+<p>Cons:
+- What about extendability?</p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">Generic <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>expr<span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span>br <span class="o">/&gt;</span>
+  self <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kp">environment</span><span class="p">()</span>
+  mc <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kp">match.call</span><span class="p">()</span>
+  <span class="kp">eval</span><span class="p">(</span>mc<span class="o">$</span>expr<span class="p">,</span> envir <span class="o">=</span> self<span class="p">)</span>
+  <span class="kr">function</span><span class="p">(</span>…<span class="p">)</span> <span class="p">{</span>
+    key <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> decodeSignature<span class="p">(</span>…<span class="p">)</span>
+    <span class="kp">get</span><span class="p">(</span>key<span class="p">,</span> envir <span class="o">=</span> self<span class="p">)(</span>…<span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>someGeneric <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> Generic<span class="p">({</span>
+  decodeSignature <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>…<span class="p">)</span> 
+    <span class="kp">paste0</span><span class="p">(</span>“m.”<span class="p">,</span> <span class="kp">paste</span><span class="p">(</span><span class="kp">sapply</span><span class="p">(</span><span class="kt">list</span><span class="p">(</span>…<span class="p">),</span> <span class="kp">class</span><span class="p">),</span> collapse <span class="o">=</span> “<span class="m">.</span>”<span class="p">))</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>m.numeric <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> “<span class="kt">numeric</span>”
+  m.character <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> “<span class="kt">character</span>”
+<span class="p">})</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>someGeneric<span class="p">(</span><span class="m">1</span><span class="p">)</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## [1] “numeric”</code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">someGeneric<span class="p">(</span>“a”<span class="p">)</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## [1] “character”</code></pre></div></p>
+
+<p>How to implement a default?</p>
+
+]]></content>
+  </entry>
+  
+</feed>

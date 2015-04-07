@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Scribus | Journal]]></title>
+  <link href="http://wahani.github.io/journal/blog/categories/scribus/atom.xml" rel="self"/>
+  <link href="http://wahani.github.io/journal/"/>
+  <updated>2015-04-07T17:18:57+02:00</updated>
+  <id>http://wahani.github.io/journal/</id>
+  <author>
+    <name><![CDATA[Sebastian Warnholz]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Post Processing Graphics]]></title>
+    <link href="http://wahani.github.io/journal/blog/2015/02/01/post-processing-graphics"/>
+    <updated>2015-02-01T00:00:00+01:00</updated>
+    <id>http://wahani.github.io/journal/blog/2015/02/01/post-processing-graphics</id>
+    <content type="html"><![CDATA[<h1 id="resources">Resources</h1>
+
+<ul>
+  <li>The open source software <a href="http://www.scribus.net/canvas/Scribus">Scribus</a></li>
+  <li>Or Inkscape:
+    <ul>
+      <li><a href="https://www.youtube.com/watch?v=YEf-NWvLJEU">YouTube Tutorial with ggplot2</a></li>
+    </ul>
+  </li>
+</ul>
+]]></content>
+  </entry>
+  
+</feed>

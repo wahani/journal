@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Fp | Journal]]></title>
   <link href="http://wahani.github.io/journal/blog/categories/fp/atom.xml" rel="self"/>
   <link href="http://wahani.github.io/journal/"/>
-  <updated>2015-01-27T17:55:37+01:00</updated>
+  <updated>2015-04-07T17:18:57+02:00</updated>
   <id>http://wahani.github.io/journal/</id>
   <author>
     <name><![CDATA[Sebastian Warnholz]]></name>
@@ -12,6 +12,239 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Generic Functions and Closures]]></title>
+    <link href="http://wahani.github.io/journal/blog/2015/03/29/closures-as-generics"/>
+    <updated>2015-03-29T00:00:00+01:00</updated>
+    <id>http://wahani.github.io/journal/blog/2015/03/29/closures-as-generics</id>
+    <content type="html"><![CDATA[<p>How to implement the behavior of generic functions using a closure. Features needed:</p>
+
+<ul>
+  <li>Methods are associated with functions.</li>
+  <li>Method dispatch</li>
+</ul>
+
+<p>What is already there:</p>
+
+<ul>
+  <li>lambda.r</li>
+  <li>S3</li>
+  <li>S4</li>
+</ul>
+
+<p>Why would I want to use a closure instead?</p>
+
+<ul>
+  <li>encapsulation: the existing approaches support the definition of methods at various places in source code. Maybe it would be interesting to encourage the method definition as part of the generic.</li>
+</ul>
+
+<p>Cons:
+- What about extendability?</p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">Generic <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>expr<span class="p">)</span> <span class="p">{</span><span class="o">&lt;</span>br <span class="o">/&gt;</span>
+  self <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kp">environment</span><span class="p">()</span>
+  mc <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kp">match.call</span><span class="p">()</span>
+  <span class="kp">eval</span><span class="p">(</span>mc<span class="o">$</span>expr<span class="p">,</span> envir <span class="o">=</span> self<span class="p">)</span>
+  <span class="kr">function</span><span class="p">(</span>…<span class="p">)</span> <span class="p">{</span>
+    key <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> decodeSignature<span class="p">(</span>…<span class="p">)</span>
+    <span class="kp">get</span><span class="p">(</span>key<span class="p">,</span> envir <span class="o">=</span> self<span class="p">)(</span>…<span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>someGeneric <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> Generic<span class="p">({</span>
+  decodeSignature <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>…<span class="p">)</span> 
+    <span class="kp">paste0</span><span class="p">(</span>“m.”<span class="p">,</span> <span class="kp">paste</span><span class="p">(</span><span class="kp">sapply</span><span class="p">(</span><span class="kt">list</span><span class="p">(</span>…<span class="p">),</span> <span class="kp">class</span><span class="p">),</span> collapse <span class="o">=</span> “<span class="m">.</span>”<span class="p">))</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>m.numeric <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> “<span class="kt">numeric</span>”
+  m.character <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> “<span class="kt">character</span>”
+<span class="p">})</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>someGeneric<span class="p">(</span><span class="m">1</span><span class="p">)</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## [1] “numeric”</code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">someGeneric<span class="p">(</span>“a”<span class="p">)</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## [1] “character”</code></pre></div></p>
+
+<p>How to implement a default?</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA['Functional Programming With Scala' With R]]></title>
+    <link href="http://wahani.github.io/journal/blog/2015/03/22/fp-scala-r"/>
+    <updated>2015-03-22T00:00:00+01:00</updated>
+    <id>http://wahani.github.io/journal/blog/2015/03/22/fp-scala-r</id>
+    <content type="html"><![CDATA[<h1 id="higher-order-functions">Higher Order Functions</h1>
+
+<p>A function to represent:</p>
+
+<script type="math/tex; mode=display"> \sum_{i = a}^b f(i)</script>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">sum <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>f<span class="p">,</span> a<span class="p">,</span> b<span class="p">)</span> <span class="p">{</span>
+  loop <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> acc<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">if</span> <span class="p">(</span>a <span class="o">&amp;</span>gt<span class="p">;</span> b<span class="p">)</span> acc
+    <span class="kr">else</span> loop<span class="p">(</span>a <span class="o">+</span> <span class="m">1</span><span class="p">,</span> f<span class="p">(</span>a<span class="p">)</span> <span class="o">+</span> acc<span class="p">)</span>
+  <span class="p">}</span>
+  loop<span class="p">(</span>a<span class="p">,</span> <span class="m">0</span><span class="p">)</span>
+<span class="p">}</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span> <span class="c1"># identity</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 15</code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="o">^</span><span class="m">3</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span> <span class="c1"># cube</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 225</code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> <span class="kr">if</span><span class="p">(</span>x <span class="o">==</span> <span class="m">0</span><span class="p">)</span> <span class="m">1</span> <span class="kr">else</span> x <span class="o">*</span> <span class="kp">Recall</span><span class="p">(</span>x <span class="o">-</span> <span class="m">1</span><span class="p">),</span> <span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span> <span class="c1"># factorial</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 153</code></pre></div></p>
+
+<h1 id="currying">Currying</h1>
+
+<p>Somehow get rid of the repetition in the 3 above examples! In each line the arguments a and b are passed, although they are the same. Not necessary!</p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">sum <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>f<span class="p">)</span> <span class="p">{</span>
+  <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> b<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">if</span> <span class="p">(</span>a <span class="o">&amp;</span>gt<span class="p">;</span> b<span class="p">)</span> <span class="m">0</span>
+    <span class="kr">else</span> f<span class="p">(</span>a<span class="p">)</span> <span class="o">+</span> <span class="kp">Recall</span><span class="p">(</span>a <span class="o">+</span> <span class="m">1</span><span class="p">,</span> b<span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 15</code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="o">^</span><span class="m">3</span><span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 225</code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> <span class="kr">if</span><span class="p">(</span>x <span class="o">==</span> <span class="m">0</span><span class="p">)</span> <span class="m">1</span> <span class="kr">else</span> x <span class="o">*</span> <span class="kp">Recall</span><span class="p">(</span>x <span class="o">-</span> <span class="m">1</span><span class="p">))(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 153</code></pre></div></p>
+
+<p>I don’t see where we get more expressive here. The example is not convincing for me. The <em>real</em> advantage to redefine <code>sum</code> is that you know can pass <code>sum(function(x) x)</code> as an object to another function and <code>a</code> and <code>b</code> are derived in another context (scope/environment).</p>
+
+<h2 id="excercise">Excercise</h2>
+
+<ul>
+  <li>write a product function</li>
+  <li>write factorial in terms of product</li>
+  <li>abstract sum/product to some other higher order function</li>
+</ul>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">product <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>f<span class="p">)</span> <span class="p">{</span>
+  <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> b<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">if</span> <span class="p">(</span>a <span class="o">&amp;</span>gt<span class="p">;</span> b<span class="p">)</span> <span class="m">1</span> <span class="c1"># change to 1</span>
+    <span class="kr">else</span> f<span class="p">(</span>a<span class="p">)</span> <span class="o">*</span> <span class="kp">Recall</span><span class="p">(</span>a <span class="o">+</span> <span class="m">1</span><span class="p">,</span> b<span class="p">)</span> <span class="c1"># change to *</span>
+  <span class="p">}</span>
+<span class="p">}</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>identity <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x
+cube <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="o">^</span><span class="m">3</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>product<span class="p">(</span><span class="kp">identity</span><span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">10</span><span class="p">)</span> <span class="o">==</span> <span class="kp">factorial</span><span class="p">(</span><span class="m">10</span><span class="p">)</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## [1] TRUE</code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">fact <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> functional<span class="o">::</span>Curry<span class="p">(</span>product<span class="p">(</span><span class="kp">identity</span><span class="p">),</span> a <span class="o">=</span> <span class="m">1</span><span class="p">)</span>
+fact<span class="p">(</span><span class="m">5</span><span class="p">)</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 120</code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">product<span class="p">(</span>cube<span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">10</span><span class="p">)</span> <span class="c1"># == large number…</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 4.778473e+19</code></pre></div></p>
+
+<p>Abstract this <code>sum</code>/<code>product</code> to something more general:</p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">mapReduce <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>f<span class="p">,</span> combine<span class="p">,</span> zero<span class="p">)</span> <span class="p">{</span>
+  <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> b<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">if</span> <span class="p">(</span>a <span class="o">&amp;</span>gt<span class="p">;</span> b<span class="p">)</span> zero
+    <span class="kr">else</span> combine<span class="p">(</span>f<span class="p">(</span>a<span class="p">),</span> <span class="kp">Recall</span><span class="p">(</span>a <span class="o">+</span> <span class="m">1</span><span class="p">,</span> b<span class="p">))</span>
+  <span class="p">}</span>
+<span class="p">}</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>mapReduce<span class="p">(</span><span class="kp">identity</span><span class="p">,</span> <span class="o">&lt;</span>code<span class="o">&gt;*&lt;/</span>code<span class="o">&gt;</span><span class="p">,</span> <span class="m">1</span><span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 120</code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">mapReduce<span class="p">(</span><span class="kp">identity</span><span class="p">,</span> <span class="o">&lt;</span>code<span class="o">&gt;+&lt;/</span>code<span class="o">&gt;</span><span class="p">,</span> <span class="m">0</span><span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 15</code></pre></div></p>
+
+<p>Why is this <code>mapReduce</code> different from the <code>Reduce</code> function in R? Hm, in <code>mapReduce</code> we have a recursive component where I do not see a direct corespondence in the <code>Reduce</code> function which, in contrast, reduces a given vector of values.</p>
+
+<h1 id="functions-and-data">Functions and Data</h1>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>aoos<span class="p">)</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## Loading required package: methods</code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">Rational <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> Class<span class="p">({</span>
+  Class <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> “Rational”
+  contains <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> “Private”<span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>numer <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> “<span class="kt">numeric</span>”
+  denom <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> “<span class="kt">numeric</span>”
+  <span class="m">.</span>g <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> “<span class="kt">numeric</span>”<span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span><span class="m">.</span>gcd <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> b<span class="p">)</span> <span class="kr">if</span><span class="p">(</span>b <span class="o">==</span> <span class="m">0</span><span class="p">)</span> a <span class="kr">else</span> <span class="kp">Recall</span><span class="p">(</span>b<span class="p">,</span> a <span class="o">%%</span> b<span class="p">)</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>initialize <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>numer<span class="p">,</span> denom<span class="p">)</span> <span class="p">{</span>
+    <span class="m">.</span>self<span class="o">$</span><span class="m">.</span>g <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="m">.</span>gcd<span class="p">(</span>numer<span class="p">,</span> denom<span class="p">)</span>
+    <span class="m">.</span>self<span class="o">$</span>numer <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> numer <span class="o">/</span> <span class="m">.</span>g
+    <span class="m">.</span>self<span class="o">$</span>denom <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> denom <span class="o">/</span> <span class="m">.</span>g<span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span><span class="p">}</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>show <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kp">cat</span><span class="p">(</span><span class="kp">paste0</span><span class="p">(</span><span class="m">.</span>self<span class="o">$</span>numer<span class="p">,</span> “<span class="o">/</span>”<span class="p">,</span> <span class="m">.</span>self<span class="o">$</span>denom<span class="p">,</span> “\n”<span class="p">))</span>
+  <span class="p">}</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>add <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>that<span class="p">)</span> <span class="p">{</span>
+    Rational<span class="p">(</span>numer <span class="o">=</span> numer <span class="o">*</span> that<span class="o">$</span>denom <span class="o">+</span> that<span class="o">$</span>numer <span class="o">*</span> denom<span class="p">,</span>
+             denom <span class="o">=</span> denom <span class="o">*</span> that<span class="o">$</span>denom<span class="p">)</span>
+  <span class="p">}</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>neg <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">()</span> <span class="p">{</span>
+    Rational<span class="p">(</span>numer <span class="o">=</span> <span class="m">-.</span>self<span class="o">$</span>numer<span class="p">,</span>
+             denom <span class="o">=</span> <span class="m">.</span>self<span class="o">$</span>denom<span class="p">)</span>
+  <span class="p">}</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>sub <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> <span class="kr">function</span><span class="p">(</span>that<span class="p">)</span> <span class="p">{</span>
+    add<span class="p">(</span>that<span class="o">$</span>neg<span class="p">())</span>
+  <span class="p">}</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span><span class="p">})</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>rational <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> Rational<span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">)</span>
+rational<span class="o">$</span>add<span class="p">(</span>rational<span class="p">)</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## 4/3</code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">rational<span class="o">$</span>neg<span class="p">()</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## -2/3</code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">rational<span class="o">$</span><span class="kp">sub</span><span class="p">(</span>rational<span class="p">)</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## 0/1</code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-r" data-lang="r">x <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> Rational<span class="p">(</span>numer <span class="o">=</span> <span class="m">1</span><span class="p">,</span> denom <span class="o">=</span> <span class="m">3</span><span class="p">)</span>
+y <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> Rational<span class="p">(</span>numer <span class="o">=</span> <span class="m">5</span><span class="p">,</span> denom <span class="o">=</span> <span class="m">7</span><span class="p">)</span>
+z <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> Rational<span class="p">(</span>numer <span class="o">=</span> <span class="m">3</span><span class="p">,</span> denom <span class="o">=</span> <span class="m">2</span><span class="p">)</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
+
+<span class="o">&lt;</span>p<span class="o">&gt;</span>x<span class="o">$</span><span class="kp">sub</span><span class="p">(</span>y<span class="p">)</span><span class="o">$</span><span class="kp">sub</span><span class="p">(</span>z<span class="p">)</span></code></pre></div></p>
+
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">## -79/42</code></pre></div></p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[2015-01-22 Notes]]></title>
@@ -50,7 +283,6 @@
 vec_mean<span class="p">(</span><span class="kt">list</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">,</span> <span class="m">2</span><span class="o">:</span><span class="m">10</span><span class="p">))</span></code></pre></div></p>
 
 <p><div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 3 6</code></pre></div></p>
-
 ]]></content>
   </entry>
   
@@ -59,7 +291,7 @@ vec_mean<span class="p">(</span><span class="kt">list</span><span class="p">(</s
     <link href="http://wahani.github.io/journal/blog/2014/06/15/Functional-Programming-with-lambdar"/>
     <updated>2014-06-15T00:00:00+02:00</updated>
     <id>http://wahani.github.io/journal/blog/2014/06/15/Functional-Programming-with-lambdar</id>
-    <content type="html"><![CDATA[<p>My first post was on <a href="/Introducing-S4-Methods/">S4-methods</a> and how I could add new features to a function without changing it – using function dispatch in S4. This works out fine, but is not optimal for me. </p>
+    <content type="html"><![CDATA[<p>My first post was on <a href="/Introducing-S4-Methods/">S4-methods</a> and how I could add new features to a function without changing it – using function dispatch in S4. This works out fine, but is not optimal for me.</p>
 
 <ul>
   <li>The function <code>setMethod</code> introduces code which is dificult to read</li>
@@ -86,22 +318,22 @@ dat <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</spa
 <span class="o">&lt;</span>p<span class="o">&gt;</span>applyFun<span class="p">(</span>dat<span class="p">,</span> “x”<span class="p">,</span> <span class="kp">mean</span><span class="p">,</span> “group”<span class="p">)</span></code></pre></div></p>
 
 <p><div class="highlight"><pre><code class="language-text" data-lang="text">##             x group
-## 1.1  1.966370     1
-## 1.2  1.966370     1
-## 1.3  1.966370     1
-## 1.4  1.966370     1
-## 1.5  1.966370     1
-## 2.6  4.230699     2
-## 2.7  4.230699     2
-## 2.8  4.230699     2
-## 2.9  4.230699     2
-## 2.10 4.230699     2</code></pre></div></p>
+## 1.1  2.481702     1
+## 1.2  2.481702     1
+## 1.3  2.481702     1
+## 1.4  2.481702     1
+## 1.5  2.481702     1
+## 2.6  4.930705     2
+## 2.7  4.930705     2
+## 2.8  4.930705     2
+## 2.9  4.930705     2
+## 2.10 4.930705     2</code></pre></div></p>
 
 <p>The function <code>applyFun</code> will apply <code>fun</code> on a subset denoted by <code>group</code> and the variable <code>var</code>. This may be usefull if you do transformations on single variables which are different in each group, or you do not want your data collapsed, i.e. preserve the original number of rows. <code>group</code> for example can be a chracter with <code>length &gt; 1</code>, I can plug in any function wich will return a scalar or a vector with the length of the input. However, it will only work on a single variable in the data, so <code>var</code> schould have length 1. I could try something with <code>[</code> instead of <code>[[</code> for subsetting but then the requirements for <code>fun</code> will change and I do want to preserve the behaviour of <code>applyFun</code>.</p>
 
 <h2 id="how-can-lambdar-help">How can lambda.r help?</h2>
 
-<p>There are different possibilities to allow vectors in the argument <code>var</code> of <code>applyFun</code>:     <br />
+<p>There are different possibilities to allow vectors in the argument <code>var</code> of <code>applyFun</code>:
 * rewrite <code>applyFun</code>
 * write a new function calling <code>applyFun</code>
 * write a function called <code>applyFun</code> calling the version of <code>applyFun</code> where <code>var</code> is a scalar: use the function dispatch introduced in lambda.r
@@ -133,31 +365,31 @@ dat <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</spa
 <span class="o">&lt;</span>p<span class="o">&gt;</span>applyFun<span class="p">(</span>dat<span class="p">,</span> “x”<span class="p">,</span> <span class="kp">mean</span><span class="p">,</span> “group”<span class="p">)</span></code></pre></div></p>
 
 <p><div class="highlight"><pre><code class="language-text" data-lang="text">##             x group
-## 1.1  1.966370     1
-## 1.2  1.966370     1
-## 1.3  1.966370     1
-## 1.4  1.966370     1
-## 1.5  1.966370     1
-## 2.6  4.230699     2
-## 2.7  4.230699     2
-## 2.8  4.230699     2
-## 2.9  4.230699     2
-## 2.10 4.230699     2</code></pre></div></p>
+## 1.1  2.481702     1
+## 1.2  2.481702     1
+## 1.3  2.481702     1
+## 1.4  2.481702     1
+## 1.5  2.481702     1
+## 2.6  4.930705     2
+## 2.7  4.930705     2
+## 2.8  4.930705     2
+## 2.9  4.930705     2
+## 2.10 4.930705     2</code></pre></div></p>
 
 <p><div class="highlight"><pre><code class="language-r" data-lang="r">dat<span class="p">[</span>“y”<span class="p">]</span> <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> rnorm<span class="p">(</span><span class="m">10</span><span class="p">)</span>
 applyFun<span class="p">(</span>dat<span class="p">,</span> <span class="kt">c</span><span class="p">(</span>“x”<span class="p">,</span> “y”<span class="p">),</span> <span class="kp">mean</span><span class="p">,</span> “group”<span class="p">)</span></code></pre></div></p>
 
-<p><div class="highlight"><pre><code class="language-text" data-lang="text">##               x group           y
-## 1.1.1  1.966370     1 -0.23740634
-## 1.1.2  1.966370     1 -0.23740634
-## 1.1.3  1.966370     1 -0.23740634
-## 1.1.4  1.966370     1 -0.23740634
-## 1.1.5  1.966370     1 -0.23740634
-## 2.2.6  4.230699     2 -0.05986417
-## 2.2.7  4.230699     2 -0.05986417
-## 2.2.8  4.230699     2 -0.05986417
-## 2.2.9  4.230699     2 -0.05986417
-## 2.2.10 4.230699     2 -0.05986417</code></pre></div></p>
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">##               x group          y
+## 1.1.1  2.481702     1 -0.7070260
+## 1.1.2  2.481702     1 -0.7070260
+## 1.1.3  2.481702     1 -0.7070260
+## 1.1.4  2.481702     1 -0.7070260
+## 1.1.5  2.481702     1 -0.7070260
+## 2.2.6  4.930705     2 -0.5315593
+## 2.2.7  4.930705     2 -0.5315593
+## 2.2.8  4.930705     2 -0.5315593
+## 2.2.9  4.930705     2 -0.5315593
+## 2.2.10 4.930705     2 -0.5315593</code></pre></div></p>
 
 <p>With <code>%when%</code> I introduce a condition, or multiple conditions, which needs to evaluate to <code>TRUE</code>. If it does the function body introduced by <code>%as%</code> is evaluated exactly like before. So I am generating a couple of more lines, but I can reuse the function body of the original <code>applyFun</code> definition. The second definition of <code>applyFun</code> is what will be called if <code>length(var) != 1</code>. So something like the else statement in a if-else clause. Like in a if-else control structure the order is important. So either I control access using a second <code>%when%</code> or the definition needs to be after the ‘<code>length(var) == 1</code>’ version, which I did here.</p>
 ]]></content>

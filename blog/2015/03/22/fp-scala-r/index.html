@@ -1,0 +1,438 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>&#8216;Functional Programming With Scala&#8217; With R - Journal</title>
+  <meta name="author" content="Sebastian Warnholz">
+
+  
+  <meta name="description" content="Higher Order Functions A function to represent: sum &lt;- function(f, a, b) { loop &lt;- function(a, acc) { if (a &gt; b) acc else loop(a + 1, f(a &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://wahani.github.io/journal/blog/2015/03/22/fp-scala-r">
+  <link href="/journal/favicon.png" rel="icon">
+  <link href="/journal/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/journal/atom.xml" rel="alternate" title="Journal" type="application/atom+xml">
+  <script src="/journal/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/journal/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,700' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+<!--- MathJax Configuration -->
+<script type="text/javascript"
+src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/journal/">Journal</a></h1>
+  
+    <h2>Notes from seb!</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  
+  
+</ul>
+
+<ul class="main-navigation">
+  <li><a href="/journal/">Blog</a></li>
+  <li><a href="/journal/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">&#8216;Functional Programming With Scala&#8217; With R</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-22T00:00:00+01:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h1 id="higher-order-functions">Higher Order Functions</h1>
+
+<p>A function to represent:</p>
+
+<script type="math/tex; mode=display"> \sum_{i = a}^b f(i)</script>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">sum <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>f<span class="p">,</span> a<span class="p">,</span> b<span class="p">)</span> <span class="p">{</span>
+  loop <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> acc<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">if</span> <span class="p">(</span>a <span class="o">&gt;</span> b<span class="p">)</span> acc
+    <span class="kr">else</span> loop<span class="p">(</span>a <span class="o">+</span> <span class="m">1</span><span class="p">,</span> f<span class="p">(</span>a<span class="p">)</span> <span class="o">+</span> acc<span class="p">)</span>
+  <span class="p">}</span>
+  loop<span class="p">(</span>a<span class="p">,</span> <span class="m">0</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span> <span class="c1"># identity</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 15</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="o">^</span><span class="m">3</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span> <span class="c1"># cube</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 225</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> <span class="kr">if</span><span class="p">(</span>x <span class="o">==</span> <span class="m">0</span><span class="p">)</span> <span class="m">1</span> <span class="kr">else</span> x <span class="o">*</span> <span class="kp">Recall</span><span class="p">(</span>x <span class="o">-</span> <span class="m">1</span><span class="p">),</span> <span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span> <span class="c1"># factorial</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 153</code></pre></div>
+
+<h1 id="currying">Currying</h1>
+
+<p>Somehow get rid of the repetition in the 3 above examples! In each line the arguments a and b are passed, although they are the same. Not necessary!</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">sum <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>f<span class="p">)</span> <span class="p">{</span>
+  <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> b<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">if</span> <span class="p">(</span>a <span class="o">&gt;</span> b<span class="p">)</span> <span class="m">0</span>
+    <span class="kr">else</span> f<span class="p">(</span>a<span class="p">)</span> <span class="o">+</span> <span class="kp">Recall</span><span class="p">(</span>a <span class="o">+</span> <span class="m">1</span><span class="p">,</span> b<span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 15</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="o">^</span><span class="m">3</span><span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 225</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> <span class="kr">if</span><span class="p">(</span>x <span class="o">==</span> <span class="m">0</span><span class="p">)</span> <span class="m">1</span> <span class="kr">else</span> x <span class="o">*</span> <span class="kp">Recall</span><span class="p">(</span>x <span class="o">-</span> <span class="m">1</span><span class="p">))(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 153</code></pre></div>
+
+<p>I don’t see where we get more expressive here. The example is not convincing for me. The <em>real</em> advantage to redefine <code>sum</code> is that you know can pass <code>sum(function(x) x)</code> as an object to another function and <code>a</code> and <code>b</code> are derived in another context (scope/environment).</p>
+
+<h2 id="excercise">Excercise</h2>
+
+<ul>
+  <li>write a product function</li>
+  <li>write factorial in terms of product</li>
+  <li>abstract sum/product to some other higher order function</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">product <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>f<span class="p">)</span> <span class="p">{</span>
+  <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> b<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">if</span> <span class="p">(</span>a <span class="o">&gt;</span> b<span class="p">)</span> <span class="m">1</span> <span class="c1"># change to 1</span>
+    <span class="kr">else</span> f<span class="p">(</span>a<span class="p">)</span> <span class="o">*</span> <span class="kp">Recall</span><span class="p">(</span>a <span class="o">+</span> <span class="m">1</span><span class="p">,</span> b<span class="p">)</span> <span class="c1"># change to *</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+identity <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x
+cube <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="o">^</span><span class="m">3</span>
+
+product<span class="p">(</span><span class="kp">identity</span><span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">10</span><span class="p">)</span> <span class="o">==</span> <span class="kp">factorial</span><span class="p">(</span><span class="m">10</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] TRUE</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">fact <span class="o">&lt;-</span> functional<span class="o">::</span>Curry<span class="p">(</span>product<span class="p">(</span><span class="kp">identity</span><span class="p">),</span> a <span class="o">=</span> <span class="m">1</span><span class="p">)</span>
+fact<span class="p">(</span><span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 120</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">product<span class="p">(</span>cube<span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">10</span><span class="p">)</span> <span class="c1"># == large number...</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 4.778473e+19</code></pre></div>
+
+<p>Abstract this <code>sum</code>/<code>product</code> to something more general:</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">mapReduce <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>f<span class="p">,</span> combine<span class="p">,</span> zero<span class="p">)</span> <span class="p">{</span>
+  <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> b<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">if</span> <span class="p">(</span>a <span class="o">&gt;</span> b<span class="p">)</span> zero
+    <span class="kr">else</span> combine<span class="p">(</span>f<span class="p">(</span>a<span class="p">),</span> <span class="kp">Recall</span><span class="p">(</span>a <span class="o">+</span> <span class="m">1</span><span class="p">,</span> b<span class="p">))</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+mapReduce<span class="p">(</span><span class="kp">identity</span><span class="p">,</span> <span class="sb">`*`</span><span class="p">,</span> <span class="m">1</span><span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 120</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">mapReduce<span class="p">(</span><span class="kp">identity</span><span class="p">,</span> <span class="sb">`+`</span><span class="p">,</span> <span class="m">0</span><span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 15</code></pre></div>
+
+<p>Why is this <code>mapReduce</code> different from the <code>Reduce</code> function in R? Hm, in <code>mapReduce</code> we have a recursive component where I do not see a direct corespondence in the <code>Reduce</code> function which, in contrast, reduces a given vector of values.</p>
+
+<h1 id="functions-and-data">Functions and Data</h1>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>aoos<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## Loading required package: methods</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">Rational <span class="o">&lt;-</span> Class<span class="p">({</span>
+  Class <span class="o">&lt;-</span> <span class="s">&quot;Rational&quot;</span>
+  contains <span class="o">&lt;-</span> <span class="s">&quot;Private&quot;</span>
+  
+  numer <span class="o">&lt;-</span> <span class="s">&quot;numeric&quot;</span>
+  denom <span class="o">&lt;-</span> <span class="s">&quot;numeric&quot;</span>
+  <span class="m">.</span>g <span class="o">&lt;-</span> <span class="s">&quot;numeric&quot;</span>
+  
+  <span class="m">.</span>gcd <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> b<span class="p">)</span> <span class="kr">if</span><span class="p">(</span>b <span class="o">==</span> <span class="m">0</span><span class="p">)</span> a <span class="kr">else</span> <span class="kp">Recall</span><span class="p">(</span>b<span class="p">,</span> a <span class="o">%%</span> b<span class="p">)</span>
+  
+  initialize <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>numer<span class="p">,</span> denom<span class="p">)</span> <span class="p">{</span>
+    <span class="m">.</span>self<span class="o">$</span><span class="m">.</span>g <span class="o">&lt;-</span> <span class="m">.</span>gcd<span class="p">(</span>numer<span class="p">,</span> denom<span class="p">)</span>
+    <span class="m">.</span>self<span class="o">$</span>numer <span class="o">&lt;-</span> numer <span class="o">/</span> <span class="m">.</span>g
+    <span class="m">.</span>self<span class="o">$</span>denom <span class="o">&lt;-</span> denom <span class="o">/</span> <span class="m">.</span>g
+    
+  <span class="p">}</span>
+  
+  show <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kp">cat</span><span class="p">(</span><span class="kp">paste0</span><span class="p">(</span><span class="m">.</span>self<span class="o">$</span>numer<span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="m">.</span>self<span class="o">$</span>denom<span class="p">,</span> <span class="s">&quot;\n&quot;</span><span class="p">))</span>
+  <span class="p">}</span>
+  
+  add <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>that<span class="p">)</span> <span class="p">{</span>
+    Rational<span class="p">(</span>numer <span class="o">=</span> numer <span class="o">*</span> that<span class="o">$</span>denom <span class="o">+</span> that<span class="o">$</span>numer <span class="o">*</span> denom<span class="p">,</span>
+             denom <span class="o">=</span> denom <span class="o">*</span> that<span class="o">$</span>denom<span class="p">)</span>
+  <span class="p">}</span>
+  
+  neg <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">()</span> <span class="p">{</span>
+    Rational<span class="p">(</span>numer <span class="o">=</span> <span class="m">-.</span>self<span class="o">$</span>numer<span class="p">,</span>
+             denom <span class="o">=</span> <span class="m">.</span>self<span class="o">$</span>denom<span class="p">)</span>
+  <span class="p">}</span>
+  
+  sub <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>that<span class="p">)</span> <span class="p">{</span>
+    add<span class="p">(</span>that<span class="o">$</span>neg<span class="p">())</span>
+  <span class="p">}</span>
+  
+<span class="p">})</span>
+
+rational <span class="o">&lt;-</span> Rational<span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">)</span>
+rational<span class="o">$</span>add<span class="p">(</span>rational<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## 4/3</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">rational<span class="o">$</span>neg<span class="p">()</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## -2/3</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">rational<span class="o">$</span><span class="kp">sub</span><span class="p">(</span>rational<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## 0/1</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">x <span class="o">&lt;-</span> Rational<span class="p">(</span>numer <span class="o">=</span> <span class="m">1</span><span class="p">,</span> denom <span class="o">=</span> <span class="m">3</span><span class="p">)</span>
+y <span class="o">&lt;-</span> Rational<span class="p">(</span>numer <span class="o">=</span> <span class="m">5</span><span class="p">,</span> denom <span class="o">=</span> <span class="m">7</span><span class="p">)</span>
+z <span class="o">&lt;-</span> Rational<span class="p">(</span>numer <span class="o">=</span> <span class="m">3</span><span class="p">,</span> denom <span class="o">=</span> <span class="m">2</span><span class="p">)</span>
+
+x<span class="o">$</span><span class="kp">sub</span><span class="p">(</span>y<span class="p">)</span><span class="o">$</span><span class="kp">sub</span><span class="p">(</span>z<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## -79/42</code></pre></div>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Sebastian</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-22T00:00:00+01:00" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/journal/blog/categories/fp/'>fp</a>, <a class='category' href='/journal/blog/categories/oop/'>oop</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://wahani.github.io/journal/blog/2015/03/22/fp-scala-r" data-via="" data-counturl="http://wahani.github.io/journal/blog/2015/03/22/fp-scala-r" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/journal/blog/2015/03/17/Teaching-R" title="Previous Post: Teaching R">&laquo; Teaching R</a>
+      
+      
+        <a class="basic-alignment right" href="/journal/blog/2015/03/29/closures-as-generics" title="Next Post: Generic functions and closures">Generic functions and closures &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+  <aside class="sidebar">
+   
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:wahani.github.io/journal" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/journal/blog/2015/04/07/The-Matrix-Package">The Matrix Package</a>
+      </li>
+    
+      <li class="post">
+        <a href="/journal/blog/2015/03/29/closures-as-generics">Generic Functions and Closures</a>
+      </li>
+    
+      <li class="post">
+        <a href="/journal/blog/2015/03/22/fp-scala-r">&#8216;Functional Programming With Scala&#8217; With R</a>
+      </li>
+    
+      <li class="post">
+        <a href="/journal/blog/2015/03/17/Teaching-R">Teaching R</a>
+      </li>
+    
+      <li class="post">
+        <a href="/journal/blog/2015/02/11/grid-layouts">Grid Layouts</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/wahani">@wahani</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'wahani',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/journal/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Sebastian Warnholz -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+<script>
+  $(document).ready(function() {  
+  var stickyNavTop = $('nav').offset().top;  
+    
+  var stickyNav = function(){  
+  var scrollTop = $(window).scrollTop();  
+         
+  if (scrollTop > stickyNavTop) {   
+      $('nav').addClass('sticky');  
+  } else {  
+      $('nav').removeClass('sticky');   
+  }  
+  };  
+    
+  stickyNav();  
+    
+  $(window).scroll(function() {  
+      stickyNav();  
+  });  
+  });  
+</script>
+
+
+</body>
+</html>

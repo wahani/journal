@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Teaching | Journal]]></title>
+  <link href="http://wahani.github.io/journal/blog/categories/teaching/atom.xml" rel="self"/>
+  <link href="http://wahani.github.io/journal/"/>
+  <updated>2015-04-07T17:18:57+02:00</updated>
+  <id>http://wahani.github.io/journal/</id>
+  <author>
+    <name><![CDATA[Sebastian Warnholz]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Teaching R]]></title>
+    <link href="http://wahani.github.io/journal/blog/2015/03/17/Teaching-R"/>
+    <updated>2015-03-17T00:00:00+01:00</updated>
+    <id>http://wahani.github.io/journal/blog/2015/03/17/Teaching-R</id>
+    <content type="html"><![CDATA[<h1 id="resources-for-teaching-with-r">Resources for teaching with R</h1>
+
+<ul>
+  <li><a href="OpenIntro">openintro.org</a></li>
+  <li><a href="statsTeachR">http://statsteachr.org/</a></li>
+</ul>
+]]></content>
+  </entry>
+  
+</feed>

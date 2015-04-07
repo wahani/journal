@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Knitr, | Journal]]></title>
   <link href="http://wahani.github.io/journal/blog/categories/knitr/atom.xml" rel="self"/>
   <link href="http://wahani.github.io/journal/"/>
-  <updated>2015-01-27T17:55:37+01:00</updated>
+  <updated>2015-04-07T17:18:57+02:00</updated>
   <id>http://wahani.github.io/journal/</id>
   <author>
     <name><![CDATA[Sebastian Warnholz]]></name>
@@ -22,15 +22,15 @@
 
 <h2 id="requirements">Requirements</h2>
 
-<p><div class="highlight"><pre><code class="language-r" data-lang="r">install.packages<span class="p">(</span>
-  <span class="kt">c</span><span class="p">(</span>‘servr’<span class="p">,</span> ‘knitr’<span class="p">),</span>
-  type <span class="o">=</span> ‘<span class="kn">source</span>’<span class="p">,</span>
-  repos <span class="o">=</span> <span class="kt">c</span><span class="p">(</span>‘http<span class="o">://</span>yihui.name<span class="o">/</span>xran’<span class="p">,</span> ‘http<span class="o">://</span>cran.rstudio.com’<span class="p">)</span>
-<span class="p">)</span></code></pre></div></p>
+<p><div class="highlight"><pre><code class="language-r" data-lang="r"><span class="lineno">1</span> install.packages<span class="p">(</span>
+<span class="lineno">2</span>   <span class="kt">c</span><span class="p">(</span>‘servr’<span class="p">,</span> ‘knitr’<span class="p">),</span>
+<span class="lineno">3</span>   type <span class="o">=</span> ‘<span class="kn">source</span>’<span class="p">,</span>
+<span class="lineno">4</span>   repos <span class="o">=</span> <span class="kt">c</span><span class="p">(</span>‘http<span class="o">://</span>yihui.name<span class="o">/</span>xran’<span class="p">,</span> ‘http<span class="o">://</span>cran.rstudio.com’<span class="p">)</span>
+<span class="lineno">5</span> <span class="p">)</span></code></pre></div></p>
 
 <h2 id="in-rstudio">In RStudio</h2>
 
-<p><div class="highlight"><pre><code class="language-r" data-lang="r">servr<span class="o">::</span>jekyll<span class="p">(</span>input <span class="o">=</span> “_rmd”<span class="p">,</span> output <span class="o">=</span> “<span class="kn">source</span><span class="o">/</span>_posts”<span class="p">)</span></code></pre></div></p>
+<p><div class="highlight"><pre><code class="language-r" data-lang="r"><span class="lineno">1</span> servr<span class="o">::</span>jekyll<span class="p">(</span>input <span class="o">=</span> “_rmd”<span class="p">,</span> output <span class="o">=</span> “<span class="kn">source</span><span class="o">/</span>_posts”<span class="p">)</span></code></pre></div></p>
 
 ]]></content>
   </entry>

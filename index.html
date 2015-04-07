@@ -9,7 +9,7 @@
   <meta name="author" content="Sebastian Warnholz">
 
   
-  <meta name="description" content="How to preserve attributes of a data.frame In the following we have two expressions in which the attributes of a data.frame will be lost. dat &lt;- &hellip;">
+  <meta name="description" content="Some considerations on perfomance: This is the example from vignette(&quot;Comparisons&quot;, package = &quot;Matrix&quot;) Base R library(&quot; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,7 +67,7 @@ src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorM
       
   <header>
     
-      <h1 class="entry-title"><a href="/journal/blog/2015/01/26/Notes">2015-01-26-Notes</a></h1>
+      <h1 class="entry-title"><a href="/journal/blog/2015/04/07/The-Matrix-Package">The Matrix Package</a></h1>
     
     
       <p class="meta">
@@ -83,96 +83,147 @@ src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorM
   
 
 
-<time datetime="2015-01-26T00:00:00+01:00" pubdate data-updated="true"></time>
+<time datetime="2015-04-07T00:00:00+02:00" pubdate data-updated="true"></time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><h1 id="how-to-preserve-attributes-of-a-dataframe">How to preserve attributes of a data.frame</h1>
+  <div class="entry-content"><h1 id="some-considerations-on-perfomance">Some considerations on perfomance:</h1>
 
-<p>In the following we have two expressions in which the attributes of a data.frame will be lost.</p>
+<p>This is the example from</p>
 
-<div class="highlight"><pre><code class="language-r" data-lang="r">dat <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>x <span class="o">=</span> <span class="m">1</span><span class="o">:</span><span class="m">10</span><span class="p">,</span> y <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
-<span class="kp">attr</span><span class="p">(</span>dat<span class="p">,</span> <span class="s">&quot;newAttr&quot;</span><span class="p">)</span> <span class="o">&lt;-</span> <span class="m">5</span>
+<div class="highlight"><pre><code class="language-r" data-lang="r">vignette<span class="p">(</span><span class="s">&quot;Comparisons&quot;</span><span class="p">,</span> package <span class="o">=</span> <span class="s">&quot;Matrix&quot;</span><span class="p">)</span></code></pre></div>
 
-<span class="c1"># works:</span>
-<span class="kp">attributes</span><span class="p">(</span>dat<span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">,])</span></code></pre></div>
+<h2 id="base-r">Base R</h2>
 
-<div class="highlight"><pre><code class="language-text" data-lang="text">## $names
-## [1] &quot;x&quot; &quot;y&quot;
-## 
-## $newAttr
-## [1] 5
-## 
-## $row.names
-## [1] 1 2 3 4 5
-## 
-## $class
-## [1] &quot;data.frame&quot;</code></pre></div>
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span><span class="s">&quot;Matrix&quot;</span><span class="p">)</span></code></pre></div>
 
-<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># dplyr is evil</span>
-<span class="kp">attributes</span><span class="p">(</span>dplyr<span class="o">::</span>filter<span class="p">(</span>dat<span class="p">,</span> x <span class="o">%in%</span> <span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">))</span></code></pre></div>
+<div class="highlight"><pre><code class="language-text" data-lang="text">## Loading required package: methods</code></pre></div>
 
-<div class="highlight"><pre><code class="language-text" data-lang="text">## $class
-## [1] &quot;data.frame&quot;
-## 
-## $row.names
-## [1] 1 2 3 4 5
-## 
-## $names
-## [1] &quot;x&quot; &quot;y&quot;</code></pre></div>
+<div class="highlight"><pre><code class="language-r" data-lang="r">data<span class="p">(</span>KNex<span class="p">,</span> package <span class="o">=</span> <span class="s">&quot;Matrix&quot;</span><span class="p">)</span>
+y <span class="o">&lt;-</span> KNex<span class="o">$</span>y
+mm <span class="o">&lt;-</span> as<span class="p">(</span>KNex<span class="o">$</span>mm<span class="p">,</span> <span class="s">&quot;matrix&quot;</span><span class="p">)</span>
+<span class="kp">system.time</span><span class="p">(</span>naive.sol <span class="o">&lt;-</span> <span class="kp">solve</span><span class="p">(</span><span class="kp">t</span><span class="p">(</span>mm<span class="p">)</span> <span class="o">%*%</span> mm<span class="p">)</span> <span class="o">%*%</span> <span class="kp">t</span><span class="p">(</span>mm<span class="p">)</span> <span class="o">%*%</span> y<span class="p">)</span></code></pre></div>
 
-<p>Can we avoid this by using a S4 data.frame?</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##    1.79    0.05    1.84</code></pre></div>
 
-<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>methods<span class="p">)</span>
-S4df <span class="o">&lt;-</span> setClass<span class="p">(</span>
-    <span class="s">&quot;S4df&quot;</span><span class="p">,</span> 
-    contains <span class="o">=</span> <span class="s">&quot;data.frame&quot;</span><span class="p">,</span> 
-    slots <span class="o">=</span> <span class="kt">list</span><span class="p">(</span><span class="s">&quot;attributes&quot;</span> <span class="o">=</span> <span class="s">&quot;list&quot;</span><span class="p">)</span>
-    <span class="p">)</span>
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">system.time</span><span class="p">(</span>cpod.sol <span class="o">&lt;-</span> <span class="kp">solve</span><span class="p">(</span><span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">),</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">,</span>y<span class="p">)))</span></code></pre></div>
 
-s4dat <span class="o">&lt;-</span> S4df<span class="p">(</span>dat<span class="p">,</span> attributes <span class="o">=</span> <span class="kp">attributes</span><span class="p">(</span>dat<span class="p">))</span>
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##    0.53    0.00    0.53</code></pre></div>
 
-<span class="kp">attributes</span><span class="p">(</span>dplyr<span class="o">::</span>filter<span class="p">(</span>s4dat<span class="p">,</span> x <span class="o">%in%</span> <span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">))</span> <span class="c1"># does not work...</span></code></pre></div>
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">system.time</span><span class="p">(</span><span class="kp">t</span><span class="p">(</span>mm<span class="p">)</span> <span class="o">%*%</span> mm<span class="p">)</span></code></pre></div>
 
-<div class="highlight"><pre><code class="language-text" data-lang="text">## Error in eval(expr, envir, enclos): could not convert using R function : as.data.frame</code></pre></div>
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##     0.7     0.0     0.7</code></pre></div>
 
-<h2 id="okay-functional-programming">Okay, functional programming…</h2>
+<h2 id="using-matrix">Using Matrix</h2>
 
-<div class="highlight"><pre><code class="language-r" data-lang="r">preserve_attributes <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>fun<span class="p">)</span> <span class="p">{</span>
-    <span class="kp">force</span><span class="p">(</span>fun<span class="p">)</span>
-    <span class="kr">function</span><span class="p">(</span>dat<span class="p">)</span> <span class="p">{</span>
-        attOfX <span class="o">&lt;-</span> <span class="kp">attributes</span><span class="p">(</span>dat<span class="p">)</span>
-        res <span class="o">&lt;-</span> fun<span class="p">(</span>dat<span class="p">)</span>
-        attOfRes <span class="o">&lt;-</span> <span class="kp">attributes</span><span class="p">(</span>res<span class="p">)</span>
-        attToPreserve <span class="o">&lt;-</span> <span class="kp">names</span><span class="p">(</span>attOfX<span class="p">)[</span><span class="o">!</span><span class="p">(</span><span class="kp">names</span><span class="p">(</span>attOfX<span class="p">)</span> <span class="o">%in%</span> <span class="kp">names</span><span class="p">(</span>attOfRes<span class="p">))]</span>
-        <span class="kp">attributes</span><span class="p">(</span>res<span class="p">)</span> <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</span><span class="kp">attributes</span><span class="p">(</span>res<span class="p">),</span> <span class="kp">attributes</span><span class="p">(</span>dat<span class="p">)[</span>attToPreserve<span class="p">])</span>
-        res
-    <span class="p">}</span>
-<span class="p">}</span>
+<p>This is equivalent to use <code>cpod.sol</code>:</p>
 
-myFilter <span class="o">&lt;-</span> preserve_attributes<span class="p">(</span>
-    functional<span class="o">::</span>CurryL<span class="p">(</span>
-        dplyr<span class="o">::</span>filter<span class="p">,</span> <span class="s">&quot;...&quot;</span> <span class="o">=</span> x <span class="o">%in%</span> <span class="m">1</span><span class="o">:</span><span class="m">5</span>
-        <span class="p">)</span>
-    <span class="p">)</span>
+<div class="highlight"><pre><code class="language-r" data-lang="r">mm <span class="o">&lt;-</span> as<span class="p">(</span>KNex<span class="o">$</span>mm<span class="p">,</span> <span class="s">&quot;dgeMatrix&quot;</span><span class="p">)</span>
+<span class="kp">system.time</span><span class="p">(</span>Mat.sol <span class="o">&lt;-</span> <span class="kp">solve</span><span class="p">(</span><span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">),</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">,</span> y<span class="p">)))</span></code></pre></div>
 
-<span class="kp">attributes</span><span class="p">(</span>myFilter<span class="p">(</span>dat<span class="p">))</span></code></pre></div>
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##    0.53    0.00    0.53</code></pre></div>
 
-<div class="highlight"><pre><code class="language-text" data-lang="text">## $class
-## [1] &quot;data.frame&quot;
-## 
-## $row.names
-## [1] 1 2 3 4 5
-## 
-## $names
-## [1] &quot;x&quot; &quot;y&quot;
-## 
-## $newAttr
-## [1] 5</code></pre></div>
+<p>There is also a concept of memoization implemented as allustrated as:</p>
 
+<div class="highlight"><pre><code class="language-r" data-lang="r">xpx <span class="o">&lt;-</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">)</span>
+xpy <span class="o">&lt;-</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">,</span> y<span class="p">)</span>
+<span class="kp">system.time</span><span class="p">(</span><span class="kp">solve</span><span class="p">(</span>xpx<span class="p">,</span> xpy<span class="p">))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##    0.06    0.00    0.06</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">system.time</span><span class="p">(</span><span class="kp">solve</span><span class="p">(</span>xpx<span class="p">,</span> xpy<span class="p">))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##       0       0       0</code></pre></div>
+
+<p>I don’t know where the results are stored exactly. The document says with the original object, so either as attribute to <code>xpx</code> or <code>xpy</code>.</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">names</span><span class="p">(</span>xpx<span class="o">@</span>factors<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] &quot;Cholesky&quot;</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">names</span><span class="p">(</span>xpy<span class="o">@</span>factors<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## NULL</code></pre></div>
+
+<p>Okay, seems that only the first argument to <code>solve</code> is modified. But in nested calls this effect is not used:</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">system.time</span><span class="p">(</span><span class="kp">solve</span><span class="p">(</span><span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">),</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">,</span> y<span class="p">)))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##    0.53    0.00    0.53</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">class</span><span class="p">(</span>mm<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] &quot;dgeMatrix&quot;
+## attr(,&quot;package&quot;)
+## [1] &quot;Matrix&quot;</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">class</span><span class="p">(</span>xpx<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] &quot;dpoMatrix&quot;
+## attr(,&quot;package&quot;)
+## [1] &quot;Matrix&quot;</code></pre></div>
+
+<p>Maybe the reason for this is that <code>crossprod</code> will change the data, so storing results of the cholesky decomposition would not be meaningfull as it only makes sense for the cross product and not <code>mm</code>. Still this means that creating <code>xpy</code> is not necessary:</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">xpx <span class="o">&lt;-</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">)</span>
+<span class="kp">system.time</span><span class="p">(</span><span class="kp">solve</span><span class="p">(</span>xpx<span class="p">,</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">,</span> y<span class="p">)))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##    0.08    0.00    0.08</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">system.time</span><span class="p">(</span><span class="kp">solve</span><span class="p">(</span>xpx<span class="p">,</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">,</span> y<span class="p">)))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##       0       0       0</code></pre></div>
+
+<p>It’s kind of the <em>manual</em> memoization of results you don’t want to recompute.</p>
+
+<h2 id="taking-advantage-of-sparse">Taking advantage of sparse</h2>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">mm <span class="o">&lt;-</span> KNex<span class="o">$</span>mm
+<span class="kp">class</span><span class="p">(</span>mm<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] &quot;dgCMatrix&quot;
+## attr(,&quot;package&quot;)
+## [1] &quot;Matrix&quot;</code></pre></div>
+
+<p>The matrix package privides a class for sparse matrices. The gain in speed is obvious, no tricky memoization needed as a lot of elements in <code>mm</code> are indeed zero.</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">system.time</span><span class="p">(</span>sparse.sol <span class="o">&lt;-</span> <span class="kp">solve</span><span class="p">(</span><span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">),</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">,</span> y<span class="p">)))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##    0.02    0.00    0.02</code></pre></div>
+
+<p>The methods seem to be polimorphic, so the return value can have different classes. <code>Matrix</code> for example will try to determine the class on it’s own:</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">dat <span class="o">&lt;-</span> rnorm<span class="p">(</span><span class="m">1e6</span><span class="p">)</span>
+dat<span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">300000</span><span class="p">]</span> <span class="o">&lt;-</span> <span class="m">0</span>
+m <span class="o">&lt;-</span> Matrix<span class="p">(</span>dat<span class="p">,</span> ncol <span class="o">=</span> <span class="m">1e3</span><span class="p">,</span> nrow <span class="o">=</span> <span class="m">1e2</span><span class="p">)</span>
+<span class="kp">class</span><span class="p">(</span>m<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] &quot;dgCMatrix&quot;
+## attr(,&quot;package&quot;)
+## [1] &quot;Matrix&quot;</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">oldM <span class="o">&lt;-</span> <span class="kt">matrix</span><span class="p">(</span>rnorm<span class="p">(</span><span class="m">1e6</span><span class="p">),</span> ncol <span class="o">=</span> <span class="m">1e3</span><span class="p">,</span> nrow <span class="o">=</span> <span class="m">1e2</span><span class="p">)</span>
+oldMm <span class="o">&lt;-</span> <span class="kp">crossprod</span><span class="p">(</span>oldM<span class="p">)</span>
+<span class="kp">class</span><span class="p">(</span>Matrix<span class="p">(</span>oldMm<span class="p">))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] &quot;dsyMatrix&quot;
+## attr(,&quot;package&quot;)
+## [1] &quot;Matrix&quot;</code></pre></div>
+
+<p>So this is nice!</p>
 </div>
   
   
@@ -185,7 +236,7 @@ myFilter <span class="o">&lt;-</span> preserve_attributes<span class="p">(</span
       
   <header>
     
-      <h1 class="entry-title"><a href="/journal/blog/2015/01/22/notes">2015-01-22 Notes</a></h1>
+      <h1 class="entry-title"><a href="/journal/blog/2015/03/29/closures-as-generics">Generic Functions and Closures</a></h1>
     
     
       <p class="meta">
@@ -201,147 +252,67 @@ myFilter <span class="o">&lt;-</span> preserve_attributes<span class="p">(</span
   
 
 
-<time datetime="2015-01-22T00:00:00+01:00" pubdate data-updated="true"></time>
+<time datetime="2015-03-29T00:00:00+01:00" pubdate data-updated="true"></time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>This might be interesting in combination with <code>lambda.tools::tryn</code>:</p>
-
-<div class="highlight"><pre><code class="language-r" data-lang="r">call_with_delay <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>fun<span class="p">,</span> delay<span class="p">)</span> <span class="p">{</span>
-    <span class="kp">force</span><span class="p">(</span>delay<span class="p">)</span>
-    <span class="kr">function</span><span class="p">(</span><span class="kc">...</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kp">Sys.sleep</span><span class="p">(</span>delay<span class="p">)</span>
-        fun<span class="p">(</span><span class="kc">...</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
-
-<p>What if I have a function which needs to be applied to each element and later I want to vectorize it.</p>
-
-<div class="highlight"><pre><code class="language-r" data-lang="r">lapply_wrapper <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>fun<span class="p">,</span> red_fun <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="p">)</span> <span class="p">{</span>
-    <span class="kp">force</span><span class="p">(</span>fun<span class="p">)</span>
-    <span class="kp">force</span><span class="p">(</span>red_fun<span class="p">)</span>
-    <span class="kr">function</span><span class="p">(</span><span class="kc">...</span><span class="p">)</span> <span class="p">{</span>
-        mc <span class="o">&lt;-</span> <span class="kp">match.call</span><span class="p">(</span>fun<span class="p">)</span>
-        mc<span class="p">[[</span><span class="m">1</span><span class="p">]]</span> <span class="o">&lt;-</span> <span class="kp">quote</span><span class="p">(</span><span class="kp">lapply</span><span class="p">)</span>
-        <span class="kp">names</span><span class="p">(</span>mc<span class="p">)[</span><span class="m">2</span><span class="p">]</span> <span class="o">&lt;-</span> <span class="s">&quot;X&quot;</span>
-        funPos <span class="o">&lt;-</span> <span class="kp">length</span><span class="p">(</span>mc<span class="p">)</span> <span class="o">+</span> <span class="m">1</span>
-        mc<span class="p">[[</span>funPos<span class="p">]]</span> <span class="o">&lt;-</span> <span class="kp">quote</span><span class="p">(</span>fun<span class="p">)</span>
-        <span class="kp">names</span><span class="p">(</span>mc<span class="p">)[</span>funPos<span class="p">]</span> <span class="o">&lt;-</span> <span class="s">&quot;FUN&quot;</span>
-        red_fun<span class="p">(</span><span class="kp">eval</span><span class="p">(</span>mc<span class="p">))</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
-
-<p>And a test:</p>
-
-<div class="highlight"><pre><code class="language-r" data-lang="r">vec_mean <span class="o">&lt;-</span> lapply_wrapper<span class="p">(</span><span class="kp">mean</span><span class="p">,</span> <span class="kp">unlist</span><span class="p">)</span>
-vec_mean<span class="p">(</span><span class="kt">list</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">,</span> <span class="m">2</span><span class="o">:</span><span class="m">10</span><span class="p">))</span></code></pre></div>
-
-<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 3 6</code></pre></div>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/journal/blog/2015/01/13/Setup-Jekyll-Octopress-and-knitr-for-workflow">Setup Jekyll Octopress and Knitr for Workflow</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-01-13T00:00:00+01:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Hello!</p>
-
-<h2 id="requirements">Requirements</h2>
-
-<div class="highlight"><pre><code class="language-r" data-lang="r">install.packages<span class="p">(</span>
-  <span class="kt">c</span><span class="p">(</span><span class="s">&#39;servr&#39;</span><span class="p">,</span> <span class="s">&#39;knitr&#39;</span><span class="p">),</span>
-  type <span class="o">=</span> <span class="s">&#39;source&#39;</span><span class="p">,</span>
-  repos <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&#39;http://yihui.name/xran&#39;</span><span class="p">,</span> <span class="s">&#39;http://cran.rstudio.com&#39;</span><span class="p">)</span>
-<span class="p">)</span></code></pre></div>
-
-<h2 id="in-rstudio">In RStudio</h2>
-
-<div class="highlight"><pre><code class="language-r" data-lang="r">servr<span class="o">::</span>jekyll<span class="p">(</span>input <span class="o">=</span> <span class="s">&quot;_rmd&quot;</span><span class="p">,</span> output <span class="o">=</span> <span class="s">&quot;source/_posts&quot;</span><span class="p">)</span></code></pre></div>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/journal/blog/2014/06/15/Functional-Programming-with-lambdar">Functional Programming With lambda.r</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-15T00:00:00+02:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>My first post was on <a href="/journal/Introducing-S4-Methods/">S4-methods</a> and how I could add new features to a function without changing it – using function dispatch in S4. This works out fine, but is not optimal for me. </p>
+  <div class="entry-content"><p>How to implement the behavior of generic functions using a closure. Features needed:</p>
 
 <ul>
-  <li>The function <code>setMethod</code> introduces code which is dificult to read</li>
-  <li>The dispatch uses classes not attributes or different conditions for dispatch</li>
-  <li>I am not trained to use object orientation as a programming style (I am not at all trained as a programmer) and after using it in a project I think if I want to get started with object orientation maybe I should not use a functional language to begin with</li>
-  <li>I would never use S4 outside package delelopment</li>
-  <li>And S4 is not playing nice with roxygen2, it took me hours to adjust my workflow</li>
+  <li>Methods are associated with functions.</li>
+  <li>Method dispatch</li>
 </ul>
 
-<p>So I wanted to get back to the functional programming techniques available in R. Here <a href="http://cran.r-project.org/web/packages/lambda.r/index.html">lambda.r</a> seems to be a nice addition to what R already offers. Especially the capability of dispatching functions. So here is an example.
+<p>What is already there:</p>
+
+<ul>
+  <li>lambda.r</li>
+  <li>S3</li>
+  <li>S4</li>
+</ul>
+
+<p>Why would I want to use a closure instead?</p>
+
+<ul>
+  <li>encapsulation: the existing approaches support the definition of methods at various places in source code. Maybe it would be interesting to encourage the method definition as part of the generic.</li>
+</ul>
+
+<p>Cons:
+- What about extendability?</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">Generic <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>expr<span class="p">)</span> <span class="p">{</span>  
+  self <span class="o">&lt;-</span> <span class="kp">environment</span><span class="p">()</span>
+  mc <span class="o">&lt;-</span> <span class="kp">match.call</span><span class="p">()</span>
+  <span class="kp">eval</span><span class="p">(</span>mc<span class="o">$</span>expr<span class="p">,</span> envir <span class="o">=</span> self<span class="p">)</span>
+  <span class="kr">function</span><span class="p">(</span><span class="kc">...</span><span class="p">)</span> <span class="p">{</span>
+    key <span class="o">&lt;-</span> decodeSignature<span class="p">(</span><span class="kc">...</span><span class="p">)</span>
+    <span class="kp">get</span><span class="p">(</span>key<span class="p">,</span> envir <span class="o">=</span> self<span class="p">)(</span><span class="kc">...</span><span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+someGeneric <span class="o">&lt;-</span> Generic<span class="p">({</span>
+  decodeSignature <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span><span class="kc">...</span><span class="p">)</span> 
+    <span class="kp">paste0</span><span class="p">(</span><span class="s">&quot;m.&quot;</span><span class="p">,</span> <span class="kp">paste</span><span class="p">(</span><span class="kp">sapply</span><span class="p">(</span><span class="kt">list</span><span class="p">(</span><span class="kc">...</span><span class="p">),</span> <span class="kp">class</span><span class="p">),</span> collapse <span class="o">=</span> <span class="s">&quot;.&quot;</span><span class="p">))</span>
+  
+  m.numeric <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> <span class="s">&quot;numeric&quot;</span>
+  m.character <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> <span class="s">&quot;character&quot;</span>
+<span class="p">})</span>
+
+someGeneric<span class="p">(</span><span class="m">1</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] &quot;numeric&quot;</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">someGeneric<span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] &quot;character&quot;</code></pre></div>
+
+<p>How to implement a default?</p>
+
 </div>
   
-  
-    <footer>
-      <a rel="full-article" href="/journal/blog/2014/06/15/Functional-Programming-with-lambdar">Read on &rarr;</a>
-    </footer>
   
 
 
@@ -352,7 +323,7 @@ vec_mean<span class="p">(</span><span class="kt">list</span><span class="p">(</s
       
   <header>
     
-      <h1 class="entry-title"><a href="/journal/blog/2014/06/03/Simulations-in-Small-Area-Estimation">saeSim: Simulation Tools in Small Area Estimation</a></h1>
+      <h1 class="entry-title"><a href="/journal/blog/2015/03/22/fp-scala-r">&#8216;Functional Programming With Scala&#8217; With R</a></h1>
     
     
       <p class="meta">
@@ -368,27 +339,284 @@ vec_mean<span class="p">(</span><span class="kt">list</span><span class="p">(</s
   
 
 
-<time datetime="2014-06-03T00:00:00+02:00" pubdate data-updated="true"></time>
+<time datetime="2015-03-22T00:00:00+01:00" pubdate data-updated="true"></time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>In this post I want to introduce the package <a href="/journal/saeSim">saeSim</a>. The package improved my set-up of design-based and model-based simulation scenarios in the context of Small Area Estimation. It introduces components with which the flow of the simulation is framed and supports a unified structure and interface between each step.</p>
+  <div class="entry-content"><h1 id="higher-order-functions">Higher Order Functions</h1>
+
+<p>A function to represent:</p>
+
+<script type="math/tex; mode=display"> \sum_{i = a}^b f(i)</script>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">sum <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>f<span class="p">,</span> a<span class="p">,</span> b<span class="p">)</span> <span class="p">{</span>
+  loop <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> acc<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">if</span> <span class="p">(</span>a <span class="o">&gt;</span> b<span class="p">)</span> acc
+    <span class="kr">else</span> loop<span class="p">(</span>a <span class="o">+</span> <span class="m">1</span><span class="p">,</span> f<span class="p">(</span>a<span class="p">)</span> <span class="o">+</span> acc<span class="p">)</span>
+  <span class="p">}</span>
+  loop<span class="p">(</span>a<span class="p">,</span> <span class="m">0</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span> <span class="c1"># identity</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 15</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="o">^</span><span class="m">3</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span> <span class="c1"># cube</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 225</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> <span class="kr">if</span><span class="p">(</span>x <span class="o">==</span> <span class="m">0</span><span class="p">)</span> <span class="m">1</span> <span class="kr">else</span> x <span class="o">*</span> <span class="kp">Recall</span><span class="p">(</span>x <span class="o">-</span> <span class="m">1</span><span class="p">),</span> <span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span> <span class="c1"># factorial</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 153</code></pre></div>
+
+<h1 id="currying">Currying</h1>
+
+<p>Somehow get rid of the repetition in the 3 above examples! In each line the arguments a and b are passed, although they are the same. Not necessary!</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">sum <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>f<span class="p">)</span> <span class="p">{</span>
+  <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> b<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">if</span> <span class="p">(</span>a <span class="o">&gt;</span> b<span class="p">)</span> <span class="m">0</span>
+    <span class="kr">else</span> f<span class="p">(</span>a<span class="p">)</span> <span class="o">+</span> <span class="kp">Recall</span><span class="p">(</span>a <span class="o">+</span> <span class="m">1</span><span class="p">,</span> b<span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 15</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="o">^</span><span class="m">3</span><span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 225</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> <span class="kr">if</span><span class="p">(</span>x <span class="o">==</span> <span class="m">0</span><span class="p">)</span> <span class="m">1</span> <span class="kr">else</span> x <span class="o">*</span> <span class="kp">Recall</span><span class="p">(</span>x <span class="o">-</span> <span class="m">1</span><span class="p">))(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 153</code></pre></div>
+
+<p>I don’t see where we get more expressive here. The example is not convincing for me. The <em>real</em> advantage to redefine <code>sum</code> is that you know can pass <code>sum(function(x) x)</code> as an object to another function and <code>a</code> and <code>b</code> are derived in another context (scope/environment).</p>
+
+<h2 id="excercise">Excercise</h2>
+
+<ul>
+  <li>write a product function</li>
+  <li>write factorial in terms of product</li>
+  <li>abstract sum/product to some other higher order function</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">product <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>f<span class="p">)</span> <span class="p">{</span>
+  <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> b<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">if</span> <span class="p">(</span>a <span class="o">&gt;</span> b<span class="p">)</span> <span class="m">1</span> <span class="c1"># change to 1</span>
+    <span class="kr">else</span> f<span class="p">(</span>a<span class="p">)</span> <span class="o">*</span> <span class="kp">Recall</span><span class="p">(</span>a <span class="o">+</span> <span class="m">1</span><span class="p">,</span> b<span class="p">)</span> <span class="c1"># change to *</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+identity <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x
+cube <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="o">^</span><span class="m">3</span>
+
+product<span class="p">(</span><span class="kp">identity</span><span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">10</span><span class="p">)</span> <span class="o">==</span> <span class="kp">factorial</span><span class="p">(</span><span class="m">10</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] TRUE</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">fact <span class="o">&lt;-</span> functional<span class="o">::</span>Curry<span class="p">(</span>product<span class="p">(</span><span class="kp">identity</span><span class="p">),</span> a <span class="o">=</span> <span class="m">1</span><span class="p">)</span>
+fact<span class="p">(</span><span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 120</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">product<span class="p">(</span>cube<span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">10</span><span class="p">)</span> <span class="c1"># == large number...</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 4.778473e+19</code></pre></div>
+
+<p>Abstract this <code>sum</code>/<code>product</code> to something more general:</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">mapReduce <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>f<span class="p">,</span> combine<span class="p">,</span> zero<span class="p">)</span> <span class="p">{</span>
+  <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> b<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">if</span> <span class="p">(</span>a <span class="o">&gt;</span> b<span class="p">)</span> zero
+    <span class="kr">else</span> combine<span class="p">(</span>f<span class="p">(</span>a<span class="p">),</span> <span class="kp">Recall</span><span class="p">(</span>a <span class="o">+</span> <span class="m">1</span><span class="p">,</span> b<span class="p">))</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+mapReduce<span class="p">(</span><span class="kp">identity</span><span class="p">,</span> <span class="sb">`*`</span><span class="p">,</span> <span class="m">1</span><span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 120</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">mapReduce<span class="p">(</span><span class="kp">identity</span><span class="p">,</span> <span class="sb">`+`</span><span class="p">,</span> <span class="m">0</span><span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 15</code></pre></div>
+
+<p>Why is this <code>mapReduce</code> different from the <code>Reduce</code> function in R? Hm, in <code>mapReduce</code> we have a recursive component where I do not see a direct corespondence in the <code>Reduce</code> function which, in contrast, reduces a given vector of values.</p>
+
+<h1 id="functions-and-data">Functions and Data</h1>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>aoos<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## Loading required package: methods</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">Rational <span class="o">&lt;-</span> Class<span class="p">({</span>
+  Class <span class="o">&lt;-</span> <span class="s">&quot;Rational&quot;</span>
+  contains <span class="o">&lt;-</span> <span class="s">&quot;Private&quot;</span>
+  
+  numer <span class="o">&lt;-</span> <span class="s">&quot;numeric&quot;</span>
+  denom <span class="o">&lt;-</span> <span class="s">&quot;numeric&quot;</span>
+  <span class="m">.</span>g <span class="o">&lt;-</span> <span class="s">&quot;numeric&quot;</span>
+  
+  <span class="m">.</span>gcd <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> b<span class="p">)</span> <span class="kr">if</span><span class="p">(</span>b <span class="o">==</span> <span class="m">0</span><span class="p">)</span> a <span class="kr">else</span> <span class="kp">Recall</span><span class="p">(</span>b<span class="p">,</span> a <span class="o">%%</span> b<span class="p">)</span>
+  
+  initialize <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>numer<span class="p">,</span> denom<span class="p">)</span> <span class="p">{</span>
+    <span class="m">.</span>self<span class="o">$</span><span class="m">.</span>g <span class="o">&lt;-</span> <span class="m">.</span>gcd<span class="p">(</span>numer<span class="p">,</span> denom<span class="p">)</span>
+    <span class="m">.</span>self<span class="o">$</span>numer <span class="o">&lt;-</span> numer <span class="o">/</span> <span class="m">.</span>g
+    <span class="m">.</span>self<span class="o">$</span>denom <span class="o">&lt;-</span> denom <span class="o">/</span> <span class="m">.</span>g
+    
+  <span class="p">}</span>
+  
+  show <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kp">cat</span><span class="p">(</span><span class="kp">paste0</span><span class="p">(</span><span class="m">.</span>self<span class="o">$</span>numer<span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="m">.</span>self<span class="o">$</span>denom<span class="p">,</span> <span class="s">&quot;\n&quot;</span><span class="p">))</span>
+  <span class="p">}</span>
+  
+  add <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>that<span class="p">)</span> <span class="p">{</span>
+    Rational<span class="p">(</span>numer <span class="o">=</span> numer <span class="o">*</span> that<span class="o">$</span>denom <span class="o">+</span> that<span class="o">$</span>numer <span class="o">*</span> denom<span class="p">,</span>
+             denom <span class="o">=</span> denom <span class="o">*</span> that<span class="o">$</span>denom<span class="p">)</span>
+  <span class="p">}</span>
+  
+  neg <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">()</span> <span class="p">{</span>
+    Rational<span class="p">(</span>numer <span class="o">=</span> <span class="m">-.</span>self<span class="o">$</span>numer<span class="p">,</span>
+             denom <span class="o">=</span> <span class="m">.</span>self<span class="o">$</span>denom<span class="p">)</span>
+  <span class="p">}</span>
+  
+  sub <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>that<span class="p">)</span> <span class="p">{</span>
+    add<span class="p">(</span>that<span class="o">$</span>neg<span class="p">())</span>
+  <span class="p">}</span>
+  
+<span class="p">})</span>
+
+rational <span class="o">&lt;-</span> Rational<span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">)</span>
+rational<span class="o">$</span>add<span class="p">(</span>rational<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## 4/3</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">rational<span class="o">$</span>neg<span class="p">()</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## -2/3</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">rational<span class="o">$</span><span class="kp">sub</span><span class="p">(</span>rational<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## 0/1</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">x <span class="o">&lt;-</span> Rational<span class="p">(</span>numer <span class="o">=</span> <span class="m">1</span><span class="p">,</span> denom <span class="o">=</span> <span class="m">3</span><span class="p">)</span>
+y <span class="o">&lt;-</span> Rational<span class="p">(</span>numer <span class="o">=</span> <span class="m">5</span><span class="p">,</span> denom <span class="o">=</span> <span class="m">7</span><span class="p">)</span>
+z <span class="o">&lt;-</span> Rational<span class="p">(</span>numer <span class="o">=</span> <span class="m">3</span><span class="p">,</span> denom <span class="o">=</span> <span class="m">2</span><span class="p">)</span>
+
+x<span class="o">$</span><span class="kp">sub</span><span class="p">(</span>y<span class="p">)</span><span class="o">$</span><span class="kp">sub</span><span class="p">(</span>z<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## -79/42</code></pre></div>
 
 </div>
   
   
-    <footer>
-      <a rel="full-article" href="/journal/blog/2014/06/03/Simulations-in-Small-Area-Estimation">Read on &rarr;</a>
-    </footer>
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/journal/blog/2015/03/17/Teaching-R">Teaching R</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-17T00:00:00+01:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1 id="resources-for-teaching-with-r">Resources for teaching with R</h1>
+
+<ul>
+  <li><a href="OpenIntro">openintro.org</a></li>
+  <li><a href="statsTeachR">http://statsteachr.org/</a></li>
+</ul>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/journal/blog/2015/02/11/grid-layouts">Grid Layouts</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-11T00:00:00+01:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1 id="how-to-layout-element-on-a-viewport">How to layout element on a viewport</h1>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>grid<span class="p">)</span>
+grid.rect<span class="p">(</span>gp <span class="o">=</span> gpar<span class="p">(</span>lty <span class="o">=</span> <span class="s">&quot;dashed&quot;</span><span class="p">))</span>
+main <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0.1</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.8</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.8</span><span class="p">,</span> 
+                 just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">),</span> name <span class="o">=</span> <span class="s">&quot;main&quot;</span><span class="p">)</span>
+title <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.9</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.6</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.1</span><span class="p">,</span>
+                  just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">))</span>
+subtitle <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.85</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.4</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span>
+                     just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">))</span>
+footnote <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0.5</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.4</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span>
+                     just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">))</span>
+
+grid.rect<span class="p">(</span>gp <span class="o">=</span> gpar<span class="p">(</span>col <span class="o">=</span> <span class="s">&quot;grey&quot;</span><span class="p">),</span> vp <span class="o">=</span> title<span class="p">)</span>
+grid.rect<span class="p">(</span>gp <span class="o">=</span> gpar<span class="p">(</span>col <span class="o">=</span> <span class="s">&quot;grey&quot;</span><span class="p">),</span> vp <span class="o">=</span> subtitle<span class="p">)</span>
+grid.rect<span class="p">(</span>gp <span class="o">=</span> gpar<span class="p">(</span>col <span class="o">=</span> <span class="s">&quot;grey&quot;</span><span class="p">),</span> vp <span class="o">=</span> main<span class="p">)</span>
+grid.rect<span class="p">(</span>gp <span class="o">=</span> gpar<span class="p">(</span>col <span class="o">=</span> <span class="s">&quot;grey&quot;</span><span class="p">),</span> vp <span class="o">=</span> footnote<span class="p">)</span></code></pre></div>
+
+<p><img src="/journal/images/images/2015-02-11-grid-layouts/unnamed-chunk-1-1.png" title="center" alt="center" width="100%" /></p>
+
+</div>
+  
   
 
 
     </article>
   
   <div class="pagination">
+    
+      <a class="prev" href="2">&larr; Older</a>
     
     <a href="/journal/blog/archives">Blog Archives</a>
     
@@ -409,23 +637,23 @@ vec_mean<span class="p">(</span><span class="kt">list</span><span class="p">(</s
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/journal/blog/2015/01/26/Notes">2015-01-26-Notes</a>
+        <a href="/journal/blog/2015/04/07/The-Matrix-Package">The Matrix Package</a>
       </li>
     
       <li class="post">
-        <a href="/journal/blog/2015/01/22/notes">2015-01-22 Notes</a>
+        <a href="/journal/blog/2015/03/29/closures-as-generics">Generic Functions and Closures</a>
       </li>
     
       <li class="post">
-        <a href="/journal/blog/2015/01/13/Setup-Jekyll-Octopress-and-knitr-for-workflow">Setup Jekyll Octopress and Knitr for Workflow</a>
+        <a href="/journal/blog/2015/03/22/fp-scala-r">&#8216;Functional Programming With Scala&#8217; With R</a>
       </li>
     
       <li class="post">
-        <a href="/journal/blog/2014/06/15/Functional-Programming-with-lambdar">Functional Programming With lambda.r</a>
+        <a href="/journal/blog/2015/03/17/Teaching-R">Teaching R</a>
       </li>
     
       <li class="post">
-        <a href="/journal/blog/2014/06/03/Simulations-in-Small-Area-Estimation">saeSim: Simulation Tools in Small Area Estimation</a>
+        <a href="/journal/blog/2015/02/11/grid-layouts">Grid Layouts</a>
       </li>
     
   </ul>

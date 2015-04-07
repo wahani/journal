@@ -1,0 +1,619 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Journal</title>
+  <meta name="author" content="Sebastian Warnholz">
+
+  
+  <meta name="description" content="Setup the Datendesign stuff Data for graphics dir.create(&quot;_rmd/data&quot;)
+writeLines(&quot;*&quot;, &quot;_rmd/data/.gitignore&quot;)
+download. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://wahani.github.io/journal/posts/2">
+  <link href="/journal/favicon.png" rel="icon">
+  <link href="/journal/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/journal/atom.xml" rel="alternate" title="Journal" type="application/atom+xml">
+  <script src="/journal/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/journal/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,700' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+<!--- MathJax Configuration -->
+<script type="text/javascript"
+src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/journal/">Journal</a></h1>
+  
+    <h2>Notes from seb!</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  
+  
+</ul>
+
+<ul class="main-navigation">
+  <li><a href="/journal/">Blog</a></li>
+  <li><a href="/journal/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/journal/blog/2015/02/07/Datendesign-setup">DatendesignR Config</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-07T00:00:00+01:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1 id="setup-the-datendesign-stuff">Setup the <em>Datendesign</em> stuff</h1>
+
+<h2 id="data-for-graphics">Data for graphics</h2>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">dir.create</span><span class="p">(</span><span class="s">&quot;_rmd/data&quot;</span><span class="p">)</span>
+<span class="kp">writeLines</span><span class="p">(</span><span class="s">&quot;*&quot;</span><span class="p">,</span> <span class="s">&quot;_rmd/data/.gitignore&quot;</span><span class="p">)</span>
+download.file<span class="p">(</span><span class="s">&quot;http://www.datendesign-r.de/alle_daten.zip&quot;</span><span class="p">,</span>
+              <span class="s">&quot;_rmd/data/alle_daten.zip&quot;</span><span class="p">)</span>
+unzip<span class="p">(</span><span class="s">&quot;_rmd/data/alle_daten.zip&quot;</span><span class="p">,</span> exdir <span class="o">=</span> <span class="s">&quot;_rmd/data&quot;</span><span class="p">)</span></code></pre></div>
+
+<h2 id="code-for-all-examples">Code for all examples</h2>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">download.file<span class="p">(</span><span class="s">&quot;http://www.datendesign-r.de/beispielcode.zip&quot;</span><span class="p">,</span>
+              <span class="s">&quot;_rmd/data/beispielcode.zip&quot;</span><span class="p">)</span>
+unzip<span class="p">(</span><span class="s">&quot;_rmd/data/beispielcode.zip&quot;</span><span class="p">,</span> exdir <span class="o">=</span> <span class="s">&quot;_rmd/data&quot;</span><span class="p">)</span></code></pre></div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/journal/blog/2015/02/07/Datendesign-Barplot-simple">6.1.1</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-07T00:00:00+01:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1 id="barplot-simple">Barplot simple</h1>
+
+<p>This is a reproduction of chapter 6.1.1 in <a href="http://www.datendesign-r.de/"><em>Datendesign mit R</em></a> with ggplot2.</p>
+
+<h2 id="preparing-data">Preparing data</h2>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">ipsos <span class="o">&lt;-</span> read.csv2<span class="p">(</span><span class="s">&quot;data/alle_daten/ipsos.csv&quot;</span><span class="p">)</span>
+ipsos <span class="o">&lt;-</span> ipsos<span class="p">[</span><span class="kp">order</span><span class="p">(</span>ipsos<span class="o">$</span>Wert<span class="p">),]</span>
+ipsos<span class="o">$</span>Land <span class="o">&lt;-</span> <span class="kp">ordered</span><span class="p">(</span>ipsos<span class="o">$</span>Land<span class="p">,</span> ipsos<span class="o">$</span>Land<span class="p">)</span>
+ipsos<span class="o">$</span>textFamily <span class="o">&lt;-</span> <span class="kp">ifelse</span><span class="p">(</span>ipsos<span class="o">$</span>Land <span class="o">%in%</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;Deutschland&quot;</span><span class="p">,</span><span class="s">&quot;Brasilien&quot;</span><span class="p">),</span>
+                          <span class="s">&quot;Lato Black&quot;</span><span class="p">,</span> <span class="s">&quot;Lato Light&quot;</span><span class="p">)</span>
+ipsos<span class="o">$</span>labels <span class="o">&lt;-</span> <span class="kp">paste0</span><span class="p">(</span>ipsos<span class="o">$</span>Land<span class="p">,</span> <span class="kp">ifelse</span><span class="p">(</span>ipsos<span class="o">$</span>Wert <span class="o">&lt;</span> <span class="m">10</span><span class="p">,</span> <span class="s">&quot;     &quot;</span><span class="p">,</span> <span class="s">&quot;  &quot;</span><span class="p">),</span>
+                                   ipsos<span class="o">$</span>Wert<span class="p">)</span>
+rect <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>ymin <span class="o">=</span> <span class="kp">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">80</span><span class="p">,</span> <span class="m">20</span><span class="p">),</span>
+           ymax <span class="o">=</span> <span class="kp">seq</span><span class="p">(</span><span class="m">20</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">20</span><span class="p">),</span>
+           xmin <span class="o">=</span> <span class="m">0.5</span><span class="p">,</span> xmax <span class="o">=</span> <span class="m">16.5</span><span class="p">,</span>
+           colour <span class="o">=</span> <span class="kp">rep</span><span class="p">(</span><span class="kt">c</span><span class="p">(</span>grDevices<span class="o">::</span>rgb<span class="p">(</span><span class="m">191</span><span class="p">,</span><span class="m">239</span><span class="p">,</span><span class="m">255</span><span class="p">,</span><span class="m">80</span><span class="p">,</span>maxColorValue<span class="o">=</span><span class="m">255</span><span class="p">),</span>
+                          grDevices<span class="o">::</span>rgb<span class="p">(</span><span class="m">191</span><span class="p">,</span><span class="m">239</span><span class="p">,</span><span class="m">255</span><span class="p">,</span><span class="m">120</span><span class="p">,</span>maxColorValue<span class="o">=</span><span class="m">255</span><span class="p">)),</span>
+                        length.out <span class="o">=</span> <span class="m">5</span><span class="p">))</span></code></pre></div>
+
+<h2 id="the-plot">The plot</h2>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>ggplot2<span class="p">)</span>
+ggBar <span class="o">&lt;-</span> ggplot<span class="p">(</span>ipsos<span class="p">)</span> <span class="o">+</span>
+  geom_bar<span class="p">(</span>aes<span class="p">(</span>x <span class="o">=</span> Land<span class="p">,</span> y <span class="o">=</span> Wert<span class="p">),</span> stat <span class="o">=</span> <span class="s">&quot;identity&quot;</span><span class="p">,</span> fill <span class="o">=</span> <span class="s">&quot;grey&quot;</span><span class="p">)</span> <span class="o">+</span>
+  scale_y_continuous<span class="p">(</span>breaks <span class="o">=</span> <span class="kp">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">20</span><span class="p">),</span> limits <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">100</span><span class="p">),</span> expand <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span> <span class="o">+</span>
+  scale_x_discrete<span class="p">(</span>labels <span class="o">=</span> ipsos<span class="o">$</span><span class="kp">labels</span><span class="p">)</span> <span class="o">+</span>
+  geom_rect<span class="p">(</span>data <span class="o">=</span> rect<span class="p">,</span>
+            mapping <span class="o">=</span> aes<span class="p">(</span>ymin <span class="o">=</span> ymin<span class="p">,</span> ymax <span class="o">=</span> ymax<span class="p">,</span>
+                          xmin <span class="o">=</span> xmin<span class="p">,</span> xmax <span class="o">=</span> xmax<span class="p">),</span>
+            fill <span class="o">=</span> rect<span class="o">$</span>colour<span class="p">)</span> <span class="o">+</span>
+  geom_bar<span class="p">(</span>aes<span class="p">(</span>x <span class="o">=</span> Land<span class="p">,</span> y <span class="o">=</span> <span class="kp">ifelse</span><span class="p">(</span>Land <span class="o">%in%</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;Brasilien&quot;</span><span class="p">,</span> <span class="s">&quot;Deutschland&quot;</span><span class="p">),</span> Wert<span class="p">,</span> <span class="kc">NA</span><span class="p">)),</span>
+           stat <span class="o">=</span> <span class="s">&quot;identity&quot;</span><span class="p">,</span> fill <span class="o">=</span> rgb<span class="p">(</span><span class="m">255</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">210</span><span class="p">,</span>maxColorValue<span class="o">=</span><span class="m">255</span><span class="p">))</span> <span class="o">+</span>
+  theme_minimal<span class="p">()</span> <span class="o">+</span>
+  labs<span class="p">(</span>y <span class="o">=</span> <span class="kc">NULL</span><span class="p">,</span>
+       x <span class="o">=</span> <span class="kc">NULL</span><span class="p">,</span>
+       title <span class="o">=</span> <span class="kc">NULL</span><span class="p">)</span> <span class="o">+</span>
+  geom_hline<span class="p">(</span>aes<span class="p">(</span>yintercept <span class="o">=</span> <span class="m">45</span><span class="p">),</span> colour <span class="o">=</span> <span class="s">&quot;skyblue3&quot;</span><span class="p">)</span> <span class="o">+</span>
+  coord_flip<span class="p">()</span> <span class="o">+</span>
+  theme<span class="p">(</span>panel.grid.minor <span class="o">=</span> element_blank<span class="p">(),</span>
+        panel.grid.major <span class="o">=</span> element_blank<span class="p">(),</span>
+        axis.ticks <span class="o">=</span> element_blank<span class="p">(),</span>
+        axis.text.y <span class="o">=</span> element_text<span class="p">(</span>
+          family <span class="o">=</span> ipsos<span class="o">$</span>textFamily<span class="p">),</span>
+        axis.title.x <span class="o">=</span> element_text<span class="p">(</span>
+          hjust <span class="o">=</span> <span class="m">1</span><span class="p">,</span>
+          vjust <span class="o">=</span> <span class="m">0</span><span class="p">,</span>
+          size <span class="o">=</span> <span class="m">9</span><span class="p">),</span>
+        plot.title <span class="o">=</span> element_text<span class="p">(</span>
+          family <span class="o">=</span> <span class="s">&quot;Lato Black&quot;</span><span class="p">,</span>
+          hjust <span class="o">=</span> <span class="m">-0.7</span><span class="p">,</span>
+          vjust <span class="o">=</span> <span class="m">1</span><span class="p">),</span>
+        text <span class="o">=</span> element_text<span class="p">(</span>family <span class="o">=</span> <span class="s">&quot;Lato Light&quot;</span><span class="p">))</span>
+
+ggBar</code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## Warning: Removed 14 rows containing missing values (position_stack).</code></pre></div>
+
+<p><img src="/journal/images/images/2015-02-07-Datendesign-Barplot-simple/unnamed-chunk-3-1.png" title="center" alt="center" width="100%" /></p>
+
+<h2 id="annotations-and-layout">Annotations and layout</h2>
+
+<p>Not really happy with this one. Defining the places on the viewport where I want to push elements:</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span><span class="s">&quot;grid&quot;</span><span class="p">)</span>
+
+main <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.9</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.8</span><span class="p">,</span> 
+                 just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">),</span> name <span class="o">=</span> <span class="s">&quot;main&quot;</span><span class="p">)</span>
+title <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.9</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.6</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.1</span><span class="p">,</span>
+                  just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">))</span>
+subtitle <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.85</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.4</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span>
+                     just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">))</span>
+footnote <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0.55</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.4</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span>
+                     just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">))</span>
+annotation1 <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0.7</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.8</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.225</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span>
+                        just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">))</span>
+annotation2 <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0.4</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.8</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.13</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span>
+                        just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">))</span></code></pre></div>
+
+<p>Now the elements and optionally to store the final graphic in a pdf:</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># pdf_datei&lt;-&quot;balkendiagramme_einfach.pdf&quot;</span>
+<span class="c1"># cairo_pdf(bg = &quot;grey98&quot;, pdf_datei, width=9, height=6.5)</span>
+grid.newpage<span class="p">()</span>
+<span class="kp">print</span><span class="p">(</span>ggBar<span class="p">,</span> vp <span class="o">=</span> main<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## Warning: Removed 14 rows containing missing values (position_stack).</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">pushViewport<span class="p">(</span>title<span class="p">)</span>
+grid.text<span class="p">(</span><span class="s">&quot;&#39;Ich glaube fest an Gott oder ein höheres Wesen&#39;&quot;</span><span class="p">,</span> 
+          gp <span class="o">=</span> gpar<span class="p">(</span>fontfamily <span class="o">=</span> <span class="s">&quot;Lato Black&quot;</span><span class="p">,</span> fontsize <span class="o">=</span> <span class="m">14</span><span class="p">),</span> 
+          just <span class="o">=</span> <span class="s">&quot;left&quot;</span><span class="p">,</span> x <span class="o">=</span> <span class="m">0.05</span><span class="p">)</span>
+upViewport<span class="p">()</span>
+pushViewport<span class="p">(</span>subtitle<span class="p">)</span>
+grid.text<span class="p">(</span><span class="s">&quot;...sagten 2010 in:&quot;</span><span class="p">,</span> 
+          gp <span class="o">=</span> gpar<span class="p">(</span>fontfamily <span class="o">=</span> <span class="s">&quot;Lato Light&quot;</span><span class="p">,</span> fontsize <span class="o">=</span> <span class="m">12</span><span class="p">),</span> 
+          just <span class="o">=</span> <span class="s">&quot;left&quot;</span><span class="p">,</span> 
+          x <span class="o">=</span> <span class="m">0.05</span><span class="p">)</span>
+upViewport<span class="p">()</span>
+pushViewport<span class="p">(</span>footnote<span class="p">)</span>
+grid.text<span class="p">(</span><span class="s">&quot;Quelle: www.ipsos-na.com, Design: Stefan Fichtel, ixtract&quot;</span><span class="p">,</span> 
+          gp <span class="o">=</span> gpar<span class="p">(</span>fontfamily <span class="o">=</span> <span class="s">&quot;Lato Light&quot;</span><span class="p">,</span> fontsize <span class="o">=</span> <span class="m">9</span><span class="p">),</span> 
+          just <span class="o">=</span> <span class="s">&quot;right&quot;</span><span class="p">,</span> 
+          x <span class="o">=</span> <span class="m">0.95</span><span class="p">)</span>
+upViewport<span class="p">()</span>
+pushViewport<span class="p">(</span>annotation1<span class="p">)</span>
+grid.text<span class="p">(</span><span class="s">&quot;Alle Angaben in Prozent&quot;</span><span class="p">,</span> 
+          gp <span class="o">=</span> gpar<span class="p">(</span>fontfamily <span class="o">=</span> <span class="s">&quot;Lato Light&quot;</span><span class="p">,</span> fontsize <span class="o">=</span> <span class="m">9</span><span class="p">),</span> 
+          just <span class="o">=</span> <span class="s">&quot;right&quot;</span><span class="p">,</span> 
+          x <span class="o">=</span> <span class="m">1</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.55</span><span class="p">)</span>
+upViewport<span class="p">()</span>
+pushViewport<span class="p">(</span>annotation2<span class="p">)</span>
+grid.text<span class="p">(</span><span class="s">&quot;Durchschnitt: 45&quot;</span><span class="p">,</span> 
+          gp <span class="o">=</span> gpar<span class="p">(</span>fontfamily <span class="o">=</span> <span class="s">&quot;Lato Light&quot;</span><span class="p">,</span> fontsize <span class="o">=</span> <span class="m">9</span><span class="p">),</span> 
+          just <span class="o">=</span> <span class="s">&quot;right&quot;</span><span class="p">,</span> 
+          x <span class="o">=</span> <span class="m">0.95</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.55</span><span class="p">)</span>
+upViewport<span class="p">()</span></code></pre></div>
+
+<p><img src="/journal/images/images/2015-02-07-Datendesign-Barplot-simple/unnamed-chunk-5-1.png" title="center" alt="center" width="100%" /></p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># dev.off()</span></code></pre></div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/journal/blog/2015/02/01/post-processing-graphics">Post Processing Graphics</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-01T00:00:00+01:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1 id="resources">Resources</h1>
+
+<ul>
+  <li>The open source software <a href="http://www.scribus.net/canvas/Scribus">Scribus</a></li>
+  <li>Or Inkscape:
+    <ul>
+      <li><a href="https://www.youtube.com/watch?v=YEf-NWvLJEU">YouTube Tutorial with ggplot2</a></li>
+    </ul>
+  </li>
+</ul>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/journal/blog/2015/01/27/Notes-on-statistical-learning">2015-01-27 Notes Statistical Learning</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-27T00:00:00+01:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1 id="linear-regression">Linear Regression</h1>
+
+<ul>
+  <li>Mosteller and Tukey 1977: interpretation of regression coefficients <em>keeping all other variables constant</em></li>
+  <li>George Box:</li>
+</ul>
+
+<blockquote>
+  <p><em>Essentially, all models are wrong, but some are useful</em></p>
+</blockquote>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/journal/blog/2015/01/26/Notes">2015-01-26-Notes</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-26T00:00:00+01:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1 id="how-to-preserve-attributes-of-a-dataframe">How to preserve attributes of a data.frame</h1>
+
+<p>In the following we have two expressions in which the attributes of a data.frame will be lost.</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">dat <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>x <span class="o">=</span> <span class="m">1</span><span class="o">:</span><span class="m">10</span><span class="p">,</span> y <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+<span class="kp">attr</span><span class="p">(</span>dat<span class="p">,</span> <span class="s">&quot;newAttr&quot;</span><span class="p">)</span> <span class="o">&lt;-</span> <span class="m">5</span>
+
+<span class="c1"># works:</span>
+<span class="kp">attributes</span><span class="p">(</span>dat<span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">,])</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## $names
+## [1] &quot;x&quot; &quot;y&quot;
+## 
+## $newAttr
+## [1] 5
+## 
+## $row.names
+## [1] 1 2 3 4 5
+## 
+## $class
+## [1] &quot;data.frame&quot;</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># dplyr is evil</span>
+<span class="kp">attributes</span><span class="p">(</span>dplyr<span class="o">::</span>filter<span class="p">(</span>dat<span class="p">,</span> x <span class="o">%in%</span> <span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## $class
+## [1] &quot;data.frame&quot;
+## 
+## $row.names
+## [1] 1 2 3 4 5
+## 
+## $names
+## [1] &quot;x&quot; &quot;y&quot;</code></pre></div>
+
+<p>Can we avoid this by using a S4 data.frame?</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>methods<span class="p">)</span>
+S4df <span class="o">&lt;-</span> setClass<span class="p">(</span>
+    <span class="s">&quot;S4df&quot;</span><span class="p">,</span>
+    contains <span class="o">=</span> <span class="s">&quot;data.frame&quot;</span><span class="p">,</span>
+    slots <span class="o">=</span> <span class="kt">list</span><span class="p">(</span><span class="s">&quot;attributes&quot;</span> <span class="o">=</span> <span class="s">&quot;list&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+
+s4dat <span class="o">&lt;-</span> S4df<span class="p">(</span>dat<span class="p">,</span> attributes <span class="o">=</span> <span class="kp">attributes</span><span class="p">(</span>dat<span class="p">))</span>
+
+<span class="kp">attributes</span><span class="p">(</span>dplyr<span class="o">::</span>filter<span class="p">(</span>s4dat<span class="p">,</span> x <span class="o">%in%</span> <span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">))</span> <span class="c1"># does not work...</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## Error in eval(expr, envir, enclos): could not convert using R function : as.data.frame</code></pre></div>
+
+<h2 id="okay-functional-programming">Okay, functional programming…</h2>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">preserve_attributes <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>fun<span class="p">)</span> <span class="p">{</span>
+    <span class="kp">force</span><span class="p">(</span>fun<span class="p">)</span>
+    <span class="kr">function</span><span class="p">(</span>dat<span class="p">)</span> <span class="p">{</span>
+        attOfX <span class="o">&lt;-</span> <span class="kp">attributes</span><span class="p">(</span>dat<span class="p">)</span>
+        res <span class="o">&lt;-</span> fun<span class="p">(</span>dat<span class="p">)</span>
+        attOfRes <span class="o">&lt;-</span> <span class="kp">attributes</span><span class="p">(</span>res<span class="p">)</span>
+        attToPreserve <span class="o">&lt;-</span> <span class="kp">names</span><span class="p">(</span>attOfX<span class="p">)[</span><span class="o">!</span><span class="p">(</span><span class="kp">names</span><span class="p">(</span>attOfX<span class="p">)</span> <span class="o">%in%</span> <span class="kp">names</span><span class="p">(</span>attOfRes<span class="p">))]</span>
+        <span class="kp">attributes</span><span class="p">(</span>res<span class="p">)</span> <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</span><span class="kp">attributes</span><span class="p">(</span>res<span class="p">),</span> <span class="kp">attributes</span><span class="p">(</span>dat<span class="p">)[</span>attToPreserve<span class="p">])</span>
+        res
+    <span class="p">}</span>
+<span class="p">}</span>
+
+myFilter <span class="o">&lt;-</span> preserve_attributes<span class="p">(</span>
+    functional<span class="o">::</span>CurryL<span class="p">(</span>
+        dplyr<span class="o">::</span>filter<span class="p">,</span> <span class="s">&quot;...&quot;</span> <span class="o">=</span> x <span class="o">%in%</span> <span class="m">1</span><span class="o">:</span><span class="m">5</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+<span class="kp">attributes</span><span class="p">(</span>myFilter<span class="p">(</span>dat<span class="p">))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## $class
+## [1] &quot;data.frame&quot;
+## 
+## $row.names
+## [1] 1 2 3 4 5
+## 
+## $names
+## [1] &quot;x&quot; &quot;y&quot;
+## 
+## $newAttr
+## [1] 5</code></pre></div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="3">&larr; Older</a>
+    
+    <a href="/journal/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="1">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+   
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:wahani.github.io/journal" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/journal/blog/2015/04/07/The-Matrix-Package">The Matrix Package</a>
+      </li>
+    
+      <li class="post">
+        <a href="/journal/blog/2015/03/29/closures-as-generics">Generic Functions and Closures</a>
+      </li>
+    
+      <li class="post">
+        <a href="/journal/blog/2015/03/22/fp-scala-r">&#8216;Functional Programming With Scala&#8217; With R</a>
+      </li>
+    
+      <li class="post">
+        <a href="/journal/blog/2015/03/17/Teaching-R">Teaching R</a>
+      </li>
+    
+      <li class="post">
+        <a href="/journal/blog/2015/02/11/grid-layouts">Grid Layouts</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/wahani">@wahani</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'wahani',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/journal/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Sebastian Warnholz -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+<script>
+  $(document).ready(function() {  
+  var stickyNavTop = $('nav').offset().top;  
+    
+  var stickyNav = function(){  
+  var scrollTop = $(window).scrollTop();  
+         
+  if (scrollTop > stickyNavTop) {   
+      $('nav').addClass('sticky');  
+  } else {  
+      $('nav').removeClass('sticky');   
+  }  
+  };  
+    
+  stickyNav();  
+    
+  $(window).scroll(function() {  
+      stickyNav();  
+  });  
+  });  
+</script>
+
+
+</body>
+</html>

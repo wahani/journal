@@ -4,7 +4,7 @@
   <title><![CDATA[Category: S4, | Journal]]></title>
   <link href="http://wahani.github.io/journal/blog/categories/s4/atom.xml" rel="self"/>
   <link href="http://wahani.github.io/journal/"/>
-  <updated>2015-01-27T17:55:37+01:00</updated>
+  <updated>2015-04-07T17:18:57+02:00</updated>
   <id>http://wahani.github.io/journal/</id>
   <author>
     <name><![CDATA[Sebastian Warnholz]]></name>
@@ -56,8 +56,8 @@
 
 <p><div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>methods<span class="p">)</span>
 S4df <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> setClass<span class="p">(</span>
-    “S4df”<span class="p">,</span> 
-    contains <span class="o">=</span> “<span class="kt">data.frame</span>”<span class="p">,</span> 
+    “S4df”<span class="p">,</span>
+    contains <span class="o">=</span> “<span class="kt">data.frame</span>”<span class="p">,</span>
     slots <span class="o">=</span> <span class="kt">list</span><span class="p">(</span>“<span class="kp">attributes</span>” <span class="o">=</span> “<span class="kt">list</span>”<span class="p">)</span>
     <span class="p">)</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>
 
@@ -100,7 +100,6 @@ S4df <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</sp
 ## 
 ## $newAttr
 ## [1] 5</code></pre></div></p>
-
 ]]></content>
   </entry>
   

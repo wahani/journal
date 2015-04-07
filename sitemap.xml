@@ -1,6 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://wahani.github.io/journal/blog/2015/04/07/The-Matrix-Package</loc>
+    <lastmod>2015-04-07T00:00:00+02:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://wahani.github.io/journal/blog/2015/03/29/closures-as-generics</loc>
+    <lastmod>2015-03-29T00:00:00+01:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://wahani.github.io/journal/blog/2015/03/22/fp-scala-r</loc>
+    <lastmod>2015-03-22T00:00:00+01:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://wahani.github.io/journal/blog/2015/03/17/Teaching-R</loc>
+    <lastmod>2015-03-17T00:00:00+01:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://wahani.github.io/journal/blog/2015/02/11/grid-layouts</loc>
+    <lastmod>2015-02-11T00:00:00+01:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://wahani.github.io/journal/blog/2015/02/07/Datendesign-setup</loc>
+    <lastmod>2015-02-07T00:00:00+01:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://wahani.github.io/journal/blog/2015/02/07/Datendesign-Barplot-simple</loc>
+    <lastmod>2015-02-07T00:00:00+01:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://wahani.github.io/journal/blog/2015/02/01/post-processing-graphics</loc>
+    <lastmod>2015-02-01T00:00:00+01:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://wahani.github.io/journal/blog/2015/01/27/Notes-on-statistical-learning</loc>
+    <lastmod>2015-01-27T00:00:00+01:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>http://wahani.github.io/journal/blog/2015/01/26/Notes</loc>
     <lastmod>2015-01-26T00:00:00+01:00</lastmod>
     <priority>0.8</priority>
@@ -26,14 +71,19 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>http://wahani.github.io/journal/blog/2014/03/10/split-apply-combine%20with%20dplyr</loc>
+    <lastmod>2014-03-10T00:00:00+01:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>http://wahani.github.io/journal/blog/archives/</loc>
-    <lastmod>2015-01-27T17:55:37+01:00</lastmod>
+    <lastmod>2015-04-07T17:18:57+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://wahani.github.io/journal/</loc>
-    <lastmod>2015-01-27T17:55:37+01:00</lastmod>
+    <lastmod>2015-04-07T17:18:57+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>

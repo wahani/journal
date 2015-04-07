@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Saesim | Journal]]></title>
   <link href="http://wahani.github.io/journal/blog/categories/saesim/atom.xml" rel="self"/>
   <link href="http://wahani.github.io/journal/"/>
-  <updated>2015-01-27T17:55:37+01:00</updated>
+  <updated>2015-04-07T17:18:57+02:00</updated>
   <id>http://wahani.github.io/journal/</id>
   <author>
     <name><![CDATA[Sebastian Warnholz]]></name>
@@ -69,7 +69,7 @@ dat<span class="o">$</span>biasMean <span class="o">&amp;</span>lt<span class="p
 <p>Imagine this style of writing with more complex data and models and hundreds or thousands of lines of code. Reproducing yourself is a mess, let alone find bugs, mistakes, etc. Another issue is that a lot of effort is needed to parallelize the computation. I would need to replace every looping structure with a parallel version. And furthermore the real task is shadowed by all kinds of unnecessary control structures. The idea to overcome this was to write one function which would do the data generation and computation on that data. That would lead only to one loop and to a potentially long function for simulation – although it is not a problem to split the task step-wise into smaller functions which would be called in the ‘main’ simulation function. In the end this is what I tried with saeSim. I identified the repeating steps and built a framework so I can easily set-up simulations without thinking about the structure and more about the statistical problem.</p>
 
 <h2 id="a-simsetup">A sim_setup</h2>
-<p>In all I have 6 steps I can part my simulation into. </p>
+<p>In all I have 6 steps I can part my simulation into.</p>
 
 <ul>
   <li>data generation: <code>sim_gen()</code></li>
@@ -99,13 +99,13 @@ setup <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</s
 
 <p><div class="highlight"><pre><code class="language-r" data-lang="r">setup</code></pre></div></p>
 
-<p><div class="highlight"><pre><code class="language-text" data-lang="text">##   idD idU           x           e         y
-## 1   1   1  0.37848715 -0.56426537 100.19271
-## 2   1   2 -0.03322072  0.03155332  99.96511
-## 3   1   3  0.69302346 -0.91341329 100.47263
-## 4   1   4  0.70192788 -1.14242630 100.26143
-## 5   1   5  0.88992447 -0.44572650 101.33412
-## 6   1   6 -0.72537724  1.60834101 100.15759</code></pre></div></p>
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">##   idD idU          x          e         y
+## 1   1   1  0.3153918 -0.7025133  99.92827
+## 2   1   2  0.1968682 -1.0272020  99.36653
+## 3   1   3 -2.2219992 -1.5642642  93.99174
+## 4   1   4  1.9272049  2.3189092 106.17332
+## 5   1   5  0.4566154 -0.7306165 100.18261
+## 6   1   6  1.0991948  0.2066723 102.40506</code></pre></div></p>
 
 <p>Note that the response ‘y’ will always be constructed automatically. To visualize the data, the plot method will always try to find ‘y’ and plot it against the first variable found.</p>
 
@@ -151,7 +151,7 @@ setup <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</s
 <span class="o">&lt;</span>p<span class="o">&gt;</span>setup</code></pre></div></p>
 
 <p><div class="highlight"><pre><code class="language-text" data-lang="text">##         lm     mean  popMean
-## 1 100.5592 100.5592 99.80724</code></pre></div></p>
+## 1 100.2171 100.2171 100.1091</code></pre></div></p>
 
 <p><div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Running the simulation</span>
 res <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> sim<span class="p">(</span>setup<span class="p">,</span> R <span class="o">=</span> <span class="m">100</span><span class="p">)</span><span class="o">&lt;/</span>p<span class="o">&gt;</span>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: lambda.r | Journal]]></title>
   <link href="http://wahani.github.io/journal/blog/categories/lambda-dot-r/atom.xml" rel="self"/>
   <link href="http://wahani.github.io/journal/"/>
-  <updated>2015-01-27T17:55:37+01:00</updated>
+  <updated>2015-04-07T17:18:57+02:00</updated>
   <id>http://wahani.github.io/journal/</id>
   <author>
     <name><![CDATA[Sebastian Warnholz]]></name>
@@ -18,7 +18,7 @@
     <link href="http://wahani.github.io/journal/blog/2014/06/15/Functional-Programming-with-lambdar"/>
     <updated>2014-06-15T00:00:00+02:00</updated>
     <id>http://wahani.github.io/journal/blog/2014/06/15/Functional-Programming-with-lambdar</id>
-    <content type="html"><![CDATA[<p>My first post was on <a href="/Introducing-S4-Methods/">S4-methods</a> and how I could add new features to a function without changing it – using function dispatch in S4. This works out fine, but is not optimal for me. </p>
+    <content type="html"><![CDATA[<p>My first post was on <a href="/Introducing-S4-Methods/">S4-methods</a> and how I could add new features to a function without changing it – using function dispatch in S4. This works out fine, but is not optimal for me.</p>
 
 <ul>
   <li>The function <code>setMethod</code> introduces code which is dificult to read</li>
@@ -45,22 +45,22 @@ dat <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</spa
 <span class="o">&lt;</span>p<span class="o">&gt;</span>applyFun<span class="p">(</span>dat<span class="p">,</span> “x”<span class="p">,</span> <span class="kp">mean</span><span class="p">,</span> “group”<span class="p">)</span></code></pre></div></p>
 
 <p><div class="highlight"><pre><code class="language-text" data-lang="text">##             x group
-## 1.1  1.966370     1
-## 1.2  1.966370     1
-## 1.3  1.966370     1
-## 1.4  1.966370     1
-## 1.5  1.966370     1
-## 2.6  4.230699     2
-## 2.7  4.230699     2
-## 2.8  4.230699     2
-## 2.9  4.230699     2
-## 2.10 4.230699     2</code></pre></div></p>
+## 1.1  2.481702     1
+## 1.2  2.481702     1
+## 1.3  2.481702     1
+## 1.4  2.481702     1
+## 1.5  2.481702     1
+## 2.6  4.930705     2
+## 2.7  4.930705     2
+## 2.8  4.930705     2
+## 2.9  4.930705     2
+## 2.10 4.930705     2</code></pre></div></p>
 
 <p>The function <code>applyFun</code> will apply <code>fun</code> on a subset denoted by <code>group</code> and the variable <code>var</code>. This may be usefull if you do transformations on single variables which are different in each group, or you do not want your data collapsed, i.e. preserve the original number of rows. <code>group</code> for example can be a chracter with <code>length &gt; 1</code>, I can plug in any function wich will return a scalar or a vector with the length of the input. However, it will only work on a single variable in the data, so <code>var</code> schould have length 1. I could try something with <code>[</code> instead of <code>[[</code> for subsetting but then the requirements for <code>fun</code> will change and I do want to preserve the behaviour of <code>applyFun</code>.</p>
 
 <h2 id="how-can-lambdar-help">How can lambda.r help?</h2>
 
-<p>There are different possibilities to allow vectors in the argument <code>var</code> of <code>applyFun</code>:     <br />
+<p>There are different possibilities to allow vectors in the argument <code>var</code> of <code>applyFun</code>:
 * rewrite <code>applyFun</code>
 * write a new function calling <code>applyFun</code>
 * write a function called <code>applyFun</code> calling the version of <code>applyFun</code> where <code>var</code> is a scalar: use the function dispatch introduced in lambda.r
@@ -92,31 +92,31 @@ dat <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</spa
 <span class="o">&lt;</span>p<span class="o">&gt;</span>applyFun<span class="p">(</span>dat<span class="p">,</span> “x”<span class="p">,</span> <span class="kp">mean</span><span class="p">,</span> “group”<span class="p">)</span></code></pre></div></p>
 
 <p><div class="highlight"><pre><code class="language-text" data-lang="text">##             x group
-## 1.1  1.966370     1
-## 1.2  1.966370     1
-## 1.3  1.966370     1
-## 1.4  1.966370     1
-## 1.5  1.966370     1
-## 2.6  4.230699     2
-## 2.7  4.230699     2
-## 2.8  4.230699     2
-## 2.9  4.230699     2
-## 2.10 4.230699     2</code></pre></div></p>
+## 1.1  2.481702     1
+## 1.2  2.481702     1
+## 1.3  2.481702     1
+## 1.4  2.481702     1
+## 1.5  2.481702     1
+## 2.6  4.930705     2
+## 2.7  4.930705     2
+## 2.8  4.930705     2
+## 2.9  4.930705     2
+## 2.10 4.930705     2</code></pre></div></p>
 
 <p><div class="highlight"><pre><code class="language-r" data-lang="r">dat<span class="p">[</span>“y”<span class="p">]</span> <span class="o">&amp;</span>lt<span class="p">;</span><span class="o">-</span> rnorm<span class="p">(</span><span class="m">10</span><span class="p">)</span>
 applyFun<span class="p">(</span>dat<span class="p">,</span> <span class="kt">c</span><span class="p">(</span>“x”<span class="p">,</span> “y”<span class="p">),</span> <span class="kp">mean</span><span class="p">,</span> “group”<span class="p">)</span></code></pre></div></p>
 
-<p><div class="highlight"><pre><code class="language-text" data-lang="text">##               x group           y
-## 1.1.1  1.966370     1 -0.23740634
-## 1.1.2  1.966370     1 -0.23740634
-## 1.1.3  1.966370     1 -0.23740634
-## 1.1.4  1.966370     1 -0.23740634
-## 1.1.5  1.966370     1 -0.23740634
-## 2.2.6  4.230699     2 -0.05986417
-## 2.2.7  4.230699     2 -0.05986417
-## 2.2.8  4.230699     2 -0.05986417
-## 2.2.9  4.230699     2 -0.05986417
-## 2.2.10 4.230699     2 -0.05986417</code></pre></div></p>
+<p><div class="highlight"><pre><code class="language-text" data-lang="text">##               x group          y
+## 1.1.1  2.481702     1 -0.7070260
+## 1.1.2  2.481702     1 -0.7070260
+## 1.1.3  2.481702     1 -0.7070260
+## 1.1.4  2.481702     1 -0.7070260
+## 1.1.5  2.481702     1 -0.7070260
+## 2.2.6  4.930705     2 -0.5315593
+## 2.2.7  4.930705     2 -0.5315593
+## 2.2.8  4.930705     2 -0.5315593
+## 2.2.9  4.930705     2 -0.5315593
+## 2.2.10 4.930705     2 -0.5315593</code></pre></div></p>
 
 <p>With <code>%when%</code> I introduce a condition, or multiple conditions, which needs to evaluate to <code>TRUE</code>. If it does the function body introduced by <code>%as%</code> is evaluated exactly like before. So I am generating a couple of more lines, but I can reuse the function body of the original <code>applyFun</code> definition. The second definition of <code>applyFun</code> is what will be called if <code>length(var) != 1</code>. So something like the else statement in a if-else clause. Like in a if-else control structure the order is important. So either I control access using a second <code>%when%</code> or the definition needs to be after the ‘<code>length(var) == 1</code>’ version, which I did here.</p>
 ]]></content>

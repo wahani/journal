@@ -4,7 +4,7 @@
   <title><![CDATA[Journal]]></title>
   <link href="http://wahani.github.io/journal/atom.xml" rel="self"/>
   <link href="http://wahani.github.io/journal/"/>
-  <updated>2015-01-27T17:55:37+01:00</updated>
+  <updated>2015-04-07T17:18:57+02:00</updated>
   <id>http://wahani.github.io/journal/</id>
   <author>
     <name><![CDATA[Sebastian Warnholz]]></name>
@@ -12,6 +12,613 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[The Matrix Package]]></title>
+    <link href="http://wahani.github.io/journal/blog/2015/04/07/The-Matrix-Package"/>
+    <updated>2015-04-07T00:00:00+02:00</updated>
+    <id>http://wahani.github.io/journal/blog/2015/04/07/The-Matrix-Package</id>
+    <content type="html"><![CDATA[<h1 id="some-considerations-on-perfomance">Some considerations on perfomance:</h1>
+
+<p>This is the example from</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">vignette<span class="p">(</span><span class="s">&quot;Comparisons&quot;</span><span class="p">,</span> package <span class="o">=</span> <span class="s">&quot;Matrix&quot;</span><span class="p">)</span></code></pre></div>
+
+<h2 id="base-r">Base R</h2>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span><span class="s">&quot;Matrix&quot;</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## Loading required package: methods</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">data<span class="p">(</span>KNex<span class="p">,</span> package <span class="o">=</span> <span class="s">&quot;Matrix&quot;</span><span class="p">)</span>
+y <span class="o">&lt;-</span> KNex<span class="o">$</span>y
+mm <span class="o">&lt;-</span> as<span class="p">(</span>KNex<span class="o">$</span>mm<span class="p">,</span> <span class="s">&quot;matrix&quot;</span><span class="p">)</span>
+<span class="kp">system.time</span><span class="p">(</span>naive.sol <span class="o">&lt;-</span> <span class="kp">solve</span><span class="p">(</span><span class="kp">t</span><span class="p">(</span>mm<span class="p">)</span> <span class="o">%*%</span> mm<span class="p">)</span> <span class="o">%*%</span> <span class="kp">t</span><span class="p">(</span>mm<span class="p">)</span> <span class="o">%*%</span> y<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##    1.79    0.05    1.84</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">system.time</span><span class="p">(</span>cpod.sol <span class="o">&lt;-</span> <span class="kp">solve</span><span class="p">(</span><span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">),</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">,</span>y<span class="p">)))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##    0.53    0.00    0.53</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">system.time</span><span class="p">(</span><span class="kp">t</span><span class="p">(</span>mm<span class="p">)</span> <span class="o">%*%</span> mm<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##     0.7     0.0     0.7</code></pre></div>
+
+<h2 id="using-matrix">Using Matrix</h2>
+
+<p>This is equivalent to use <code>cpod.sol</code>:</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">mm <span class="o">&lt;-</span> as<span class="p">(</span>KNex<span class="o">$</span>mm<span class="p">,</span> <span class="s">&quot;dgeMatrix&quot;</span><span class="p">)</span>
+<span class="kp">system.time</span><span class="p">(</span>Mat.sol <span class="o">&lt;-</span> <span class="kp">solve</span><span class="p">(</span><span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">),</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">,</span> y<span class="p">)))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##    0.53    0.00    0.53</code></pre></div>
+
+<p>There is also a concept of memoization implemented as allustrated as:</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">xpx <span class="o">&lt;-</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">)</span>
+xpy <span class="o">&lt;-</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">,</span> y<span class="p">)</span>
+<span class="kp">system.time</span><span class="p">(</span><span class="kp">solve</span><span class="p">(</span>xpx<span class="p">,</span> xpy<span class="p">))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##    0.06    0.00    0.06</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">system.time</span><span class="p">(</span><span class="kp">solve</span><span class="p">(</span>xpx<span class="p">,</span> xpy<span class="p">))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##       0       0       0</code></pre></div>
+
+<p>I don’t know where the results are stored exactly. The document says with the original object, so either as attribute to <code>xpx</code> or <code>xpy</code>.</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">names</span><span class="p">(</span>xpx<span class="o">@</span>factors<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] &quot;Cholesky&quot;</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">names</span><span class="p">(</span>xpy<span class="o">@</span>factors<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## NULL</code></pre></div>
+
+<p>Okay, seems that only the first argument to <code>solve</code> is modified. But in nested calls this effect is not used:</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">system.time</span><span class="p">(</span><span class="kp">solve</span><span class="p">(</span><span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">),</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">,</span> y<span class="p">)))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##    0.53    0.00    0.53</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">class</span><span class="p">(</span>mm<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] &quot;dgeMatrix&quot;
+## attr(,&quot;package&quot;)
+## [1] &quot;Matrix&quot;</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">class</span><span class="p">(</span>xpx<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] &quot;dpoMatrix&quot;
+## attr(,&quot;package&quot;)
+## [1] &quot;Matrix&quot;</code></pre></div>
+
+<p>Maybe the reason for this is that <code>crossprod</code> will change the data, so storing results of the cholesky decomposition would not be meaningfull as it only makes sense for the cross product and not <code>mm</code>. Still this means that creating <code>xpy</code> is not necessary:</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">xpx <span class="o">&lt;-</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">)</span>
+<span class="kp">system.time</span><span class="p">(</span><span class="kp">solve</span><span class="p">(</span>xpx<span class="p">,</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">,</span> y<span class="p">)))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##    0.08    0.00    0.08</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">system.time</span><span class="p">(</span><span class="kp">solve</span><span class="p">(</span>xpx<span class="p">,</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">,</span> y<span class="p">)))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##       0       0       0</code></pre></div>
+
+<p>It’s kind of the <em>manual</em> memoization of results you don’t want to recompute.</p>
+
+<h2 id="taking-advantage-of-sparse">Taking advantage of sparse</h2>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">mm <span class="o">&lt;-</span> KNex<span class="o">$</span>mm
+<span class="kp">class</span><span class="p">(</span>mm<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] &quot;dgCMatrix&quot;
+## attr(,&quot;package&quot;)
+## [1] &quot;Matrix&quot;</code></pre></div>
+
+<p>The matrix package privides a class for sparse matrices. The gain in speed is obvious, no tricky memoization needed as a lot of elements in <code>mm</code> are indeed zero.</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">system.time</span><span class="p">(</span>sparse.sol <span class="o">&lt;-</span> <span class="kp">solve</span><span class="p">(</span><span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">),</span> <span class="kp">crossprod</span><span class="p">(</span>mm<span class="p">,</span> y<span class="p">)))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">##    user  system elapsed 
+##    0.02    0.00    0.02</code></pre></div>
+
+<p>The methods seem to be polimorphic, so the return value can have different classes. <code>Matrix</code> for example will try to determine the class on it’s own:</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">dat <span class="o">&lt;-</span> rnorm<span class="p">(</span><span class="m">1e6</span><span class="p">)</span>
+dat<span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">300000</span><span class="p">]</span> <span class="o">&lt;-</span> <span class="m">0</span>
+m <span class="o">&lt;-</span> Matrix<span class="p">(</span>dat<span class="p">,</span> ncol <span class="o">=</span> <span class="m">1e3</span><span class="p">,</span> nrow <span class="o">=</span> <span class="m">1e2</span><span class="p">)</span>
+<span class="kp">class</span><span class="p">(</span>m<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] &quot;dgCMatrix&quot;
+## attr(,&quot;package&quot;)
+## [1] &quot;Matrix&quot;</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">oldM <span class="o">&lt;-</span> <span class="kt">matrix</span><span class="p">(</span>rnorm<span class="p">(</span><span class="m">1e6</span><span class="p">),</span> ncol <span class="o">=</span> <span class="m">1e3</span><span class="p">,</span> nrow <span class="o">=</span> <span class="m">1e2</span><span class="p">)</span>
+oldMm <span class="o">&lt;-</span> <span class="kp">crossprod</span><span class="p">(</span>oldM<span class="p">)</span>
+<span class="kp">class</span><span class="p">(</span>Matrix<span class="p">(</span>oldMm<span class="p">))</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] &quot;dsyMatrix&quot;
+## attr(,&quot;package&quot;)
+## [1] &quot;Matrix&quot;</code></pre></div>
+
+<p>So this is nice!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Generic Functions and Closures]]></title>
+    <link href="http://wahani.github.io/journal/blog/2015/03/29/closures-as-generics"/>
+    <updated>2015-03-29T00:00:00+01:00</updated>
+    <id>http://wahani.github.io/journal/blog/2015/03/29/closures-as-generics</id>
+    <content type="html"><![CDATA[<p>How to implement the behavior of generic functions using a closure. Features needed:</p>
+
+<ul>
+  <li>Methods are associated with functions.</li>
+  <li>Method dispatch</li>
+</ul>
+
+<p>What is already there:</p>
+
+<ul>
+  <li>lambda.r</li>
+  <li>S3</li>
+  <li>S4</li>
+</ul>
+
+<p>Why would I want to use a closure instead?</p>
+
+<ul>
+  <li>encapsulation: the existing approaches support the definition of methods at various places in source code. Maybe it would be interesting to encourage the method definition as part of the generic.</li>
+</ul>
+
+<p>Cons:
+- What about extendability?</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">Generic <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>expr<span class="p">)</span> <span class="p">{</span>  
+  self <span class="o">&lt;-</span> <span class="kp">environment</span><span class="p">()</span>
+  mc <span class="o">&lt;-</span> <span class="kp">match.call</span><span class="p">()</span>
+  <span class="kp">eval</span><span class="p">(</span>mc<span class="o">$</span>expr<span class="p">,</span> envir <span class="o">=</span> self<span class="p">)</span>
+  <span class="kr">function</span><span class="p">(</span><span class="kc">...</span><span class="p">)</span> <span class="p">{</span>
+    key <span class="o">&lt;-</span> decodeSignature<span class="p">(</span><span class="kc">...</span><span class="p">)</span>
+    <span class="kp">get</span><span class="p">(</span>key<span class="p">,</span> envir <span class="o">=</span> self<span class="p">)(</span><span class="kc">...</span><span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+someGeneric <span class="o">&lt;-</span> Generic<span class="p">({</span>
+  decodeSignature <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span><span class="kc">...</span><span class="p">)</span> 
+    <span class="kp">paste0</span><span class="p">(</span><span class="s">&quot;m.&quot;</span><span class="p">,</span> <span class="kp">paste</span><span class="p">(</span><span class="kp">sapply</span><span class="p">(</span><span class="kt">list</span><span class="p">(</span><span class="kc">...</span><span class="p">),</span> <span class="kp">class</span><span class="p">),</span> collapse <span class="o">=</span> <span class="s">&quot;.&quot;</span><span class="p">))</span>
+  
+  m.numeric <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> <span class="s">&quot;numeric&quot;</span>
+  m.character <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> <span class="s">&quot;character&quot;</span>
+<span class="p">})</span>
+
+someGeneric<span class="p">(</span><span class="m">1</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] &quot;numeric&quot;</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">someGeneric<span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] &quot;character&quot;</code></pre></div>
+
+<p>How to implement a default?</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA['Functional Programming With Scala' With R]]></title>
+    <link href="http://wahani.github.io/journal/blog/2015/03/22/fp-scala-r"/>
+    <updated>2015-03-22T00:00:00+01:00</updated>
+    <id>http://wahani.github.io/journal/blog/2015/03/22/fp-scala-r</id>
+    <content type="html"><![CDATA[<h1 id="higher-order-functions">Higher Order Functions</h1>
+
+<p>A function to represent:</p>
+
+<script type="math/tex; mode=display"> \sum_{i = a}^b f(i)</script>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">sum <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>f<span class="p">,</span> a<span class="p">,</span> b<span class="p">)</span> <span class="p">{</span>
+  loop <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> acc<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">if</span> <span class="p">(</span>a <span class="o">&gt;</span> b<span class="p">)</span> acc
+    <span class="kr">else</span> loop<span class="p">(</span>a <span class="o">+</span> <span class="m">1</span><span class="p">,</span> f<span class="p">(</span>a<span class="p">)</span> <span class="o">+</span> acc<span class="p">)</span>
+  <span class="p">}</span>
+  loop<span class="p">(</span>a<span class="p">,</span> <span class="m">0</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span> <span class="c1"># identity</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 15</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="o">^</span><span class="m">3</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span> <span class="c1"># cube</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 225</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> <span class="kr">if</span><span class="p">(</span>x <span class="o">==</span> <span class="m">0</span><span class="p">)</span> <span class="m">1</span> <span class="kr">else</span> x <span class="o">*</span> <span class="kp">Recall</span><span class="p">(</span>x <span class="o">-</span> <span class="m">1</span><span class="p">),</span> <span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span> <span class="c1"># factorial</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 153</code></pre></div>
+
+<h1 id="currying">Currying</h1>
+
+<p>Somehow get rid of the repetition in the 3 above examples! In each line the arguments a and b are passed, although they are the same. Not necessary!</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">sum <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>f<span class="p">)</span> <span class="p">{</span>
+  <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> b<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">if</span> <span class="p">(</span>a <span class="o">&gt;</span> b<span class="p">)</span> <span class="m">0</span>
+    <span class="kr">else</span> f<span class="p">(</span>a<span class="p">)</span> <span class="o">+</span> <span class="kp">Recall</span><span class="p">(</span>a <span class="o">+</span> <span class="m">1</span><span class="p">,</span> b<span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 15</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="o">^</span><span class="m">3</span><span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 225</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">sum</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> <span class="kr">if</span><span class="p">(</span>x <span class="o">==</span> <span class="m">0</span><span class="p">)</span> <span class="m">1</span> <span class="kr">else</span> x <span class="o">*</span> <span class="kp">Recall</span><span class="p">(</span>x <span class="o">-</span> <span class="m">1</span><span class="p">))(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 153</code></pre></div>
+
+<p>I don’t see where we get more expressive here. The example is not convincing for me. The <em>real</em> advantage to redefine <code>sum</code> is that you know can pass <code>sum(function(x) x)</code> as an object to another function and <code>a</code> and <code>b</code> are derived in another context (scope/environment).</p>
+
+<h2 id="excercise">Excercise</h2>
+
+<ul>
+  <li>write a product function</li>
+  <li>write factorial in terms of product</li>
+  <li>abstract sum/product to some other higher order function</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">product <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>f<span class="p">)</span> <span class="p">{</span>
+  <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> b<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">if</span> <span class="p">(</span>a <span class="o">&gt;</span> b<span class="p">)</span> <span class="m">1</span> <span class="c1"># change to 1</span>
+    <span class="kr">else</span> f<span class="p">(</span>a<span class="p">)</span> <span class="o">*</span> <span class="kp">Recall</span><span class="p">(</span>a <span class="o">+</span> <span class="m">1</span><span class="p">,</span> b<span class="p">)</span> <span class="c1"># change to *</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+identity <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x
+cube <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>x<span class="p">)</span> x<span class="o">^</span><span class="m">3</span>
+
+product<span class="p">(</span><span class="kp">identity</span><span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">10</span><span class="p">)</span> <span class="o">==</span> <span class="kp">factorial</span><span class="p">(</span><span class="m">10</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] TRUE</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">fact <span class="o">&lt;-</span> functional<span class="o">::</span>Curry<span class="p">(</span>product<span class="p">(</span><span class="kp">identity</span><span class="p">),</span> a <span class="o">=</span> <span class="m">1</span><span class="p">)</span>
+fact<span class="p">(</span><span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 120</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">product<span class="p">(</span>cube<span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">10</span><span class="p">)</span> <span class="c1"># == large number...</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 4.778473e+19</code></pre></div>
+
+<p>Abstract this <code>sum</code>/<code>product</code> to something more general:</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">mapReduce <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>f<span class="p">,</span> combine<span class="p">,</span> zero<span class="p">)</span> <span class="p">{</span>
+  <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> b<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">if</span> <span class="p">(</span>a <span class="o">&gt;</span> b<span class="p">)</span> zero
+    <span class="kr">else</span> combine<span class="p">(</span>f<span class="p">(</span>a<span class="p">),</span> <span class="kp">Recall</span><span class="p">(</span>a <span class="o">+</span> <span class="m">1</span><span class="p">,</span> b<span class="p">))</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+mapReduce<span class="p">(</span><span class="kp">identity</span><span class="p">,</span> <span class="sb">`*`</span><span class="p">,</span> <span class="m">1</span><span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 120</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">mapReduce<span class="p">(</span><span class="kp">identity</span><span class="p">,</span> <span class="sb">`+`</span><span class="p">,</span> <span class="m">0</span><span class="p">)(</span><span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## [1] 15</code></pre></div>
+
+<p>Why is this <code>mapReduce</code> different from the <code>Reduce</code> function in R? Hm, in <code>mapReduce</code> we have a recursive component where I do not see a direct corespondence in the <code>Reduce</code> function which, in contrast, reduces a given vector of values.</p>
+
+<h1 id="functions-and-data">Functions and Data</h1>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>aoos<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## Loading required package: methods</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">Rational <span class="o">&lt;-</span> Class<span class="p">({</span>
+  Class <span class="o">&lt;-</span> <span class="s">&quot;Rational&quot;</span>
+  contains <span class="o">&lt;-</span> <span class="s">&quot;Private&quot;</span>
+  
+  numer <span class="o">&lt;-</span> <span class="s">&quot;numeric&quot;</span>
+  denom <span class="o">&lt;-</span> <span class="s">&quot;numeric&quot;</span>
+  <span class="m">.</span>g <span class="o">&lt;-</span> <span class="s">&quot;numeric&quot;</span>
+  
+  <span class="m">.</span>gcd <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>a<span class="p">,</span> b<span class="p">)</span> <span class="kr">if</span><span class="p">(</span>b <span class="o">==</span> <span class="m">0</span><span class="p">)</span> a <span class="kr">else</span> <span class="kp">Recall</span><span class="p">(</span>b<span class="p">,</span> a <span class="o">%%</span> b<span class="p">)</span>
+  
+  initialize <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>numer<span class="p">,</span> denom<span class="p">)</span> <span class="p">{</span>
+    <span class="m">.</span>self<span class="o">$</span><span class="m">.</span>g <span class="o">&lt;-</span> <span class="m">.</span>gcd<span class="p">(</span>numer<span class="p">,</span> denom<span class="p">)</span>
+    <span class="m">.</span>self<span class="o">$</span>numer <span class="o">&lt;-</span> numer <span class="o">/</span> <span class="m">.</span>g
+    <span class="m">.</span>self<span class="o">$</span>denom <span class="o">&lt;-</span> denom <span class="o">/</span> <span class="m">.</span>g
+    
+  <span class="p">}</span>
+  
+  show <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kp">cat</span><span class="p">(</span><span class="kp">paste0</span><span class="p">(</span><span class="m">.</span>self<span class="o">$</span>numer<span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="m">.</span>self<span class="o">$</span>denom<span class="p">,</span> <span class="s">&quot;\n&quot;</span><span class="p">))</span>
+  <span class="p">}</span>
+  
+  add <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>that<span class="p">)</span> <span class="p">{</span>
+    Rational<span class="p">(</span>numer <span class="o">=</span> numer <span class="o">*</span> that<span class="o">$</span>denom <span class="o">+</span> that<span class="o">$</span>numer <span class="o">*</span> denom<span class="p">,</span>
+             denom <span class="o">=</span> denom <span class="o">*</span> that<span class="o">$</span>denom<span class="p">)</span>
+  <span class="p">}</span>
+  
+  neg <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">()</span> <span class="p">{</span>
+    Rational<span class="p">(</span>numer <span class="o">=</span> <span class="m">-.</span>self<span class="o">$</span>numer<span class="p">,</span>
+             denom <span class="o">=</span> <span class="m">.</span>self<span class="o">$</span>denom<span class="p">)</span>
+  <span class="p">}</span>
+  
+  sub <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>that<span class="p">)</span> <span class="p">{</span>
+    add<span class="p">(</span>that<span class="o">$</span>neg<span class="p">())</span>
+  <span class="p">}</span>
+  
+<span class="p">})</span>
+
+rational <span class="o">&lt;-</span> Rational<span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">)</span>
+rational<span class="o">$</span>add<span class="p">(</span>rational<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## 4/3</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">rational<span class="o">$</span>neg<span class="p">()</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## -2/3</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">rational<span class="o">$</span><span class="kp">sub</span><span class="p">(</span>rational<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## 0/1</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">x <span class="o">&lt;-</span> Rational<span class="p">(</span>numer <span class="o">=</span> <span class="m">1</span><span class="p">,</span> denom <span class="o">=</span> <span class="m">3</span><span class="p">)</span>
+y <span class="o">&lt;-</span> Rational<span class="p">(</span>numer <span class="o">=</span> <span class="m">5</span><span class="p">,</span> denom <span class="o">=</span> <span class="m">7</span><span class="p">)</span>
+z <span class="o">&lt;-</span> Rational<span class="p">(</span>numer <span class="o">=</span> <span class="m">3</span><span class="p">,</span> denom <span class="o">=</span> <span class="m">2</span><span class="p">)</span>
+
+x<span class="o">$</span><span class="kp">sub</span><span class="p">(</span>y<span class="p">)</span><span class="o">$</span><span class="kp">sub</span><span class="p">(</span>z<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## -79/42</code></pre></div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Teaching R]]></title>
+    <link href="http://wahani.github.io/journal/blog/2015/03/17/Teaching-R"/>
+    <updated>2015-03-17T00:00:00+01:00</updated>
+    <id>http://wahani.github.io/journal/blog/2015/03/17/Teaching-R</id>
+    <content type="html"><![CDATA[<h1 id="resources-for-teaching-with-r">Resources for teaching with R</h1>
+
+<ul>
+  <li><a href="OpenIntro">openintro.org</a></li>
+  <li><a href="statsTeachR">http://statsteachr.org/</a></li>
+</ul>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Grid Layouts]]></title>
+    <link href="http://wahani.github.io/journal/blog/2015/02/11/grid-layouts"/>
+    <updated>2015-02-11T00:00:00+01:00</updated>
+    <id>http://wahani.github.io/journal/blog/2015/02/11/grid-layouts</id>
+    <content type="html"><![CDATA[<h1 id="how-to-layout-element-on-a-viewport">How to layout element on a viewport</h1>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>grid<span class="p">)</span>
+grid.rect<span class="p">(</span>gp <span class="o">=</span> gpar<span class="p">(</span>lty <span class="o">=</span> <span class="s">&quot;dashed&quot;</span><span class="p">))</span>
+main <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0.1</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.8</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.8</span><span class="p">,</span> 
+                 just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">),</span> name <span class="o">=</span> <span class="s">&quot;main&quot;</span><span class="p">)</span>
+title <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.9</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.6</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.1</span><span class="p">,</span>
+                  just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">))</span>
+subtitle <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.85</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.4</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span>
+                     just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">))</span>
+footnote <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0.5</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.4</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span>
+                     just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">))</span>
+
+grid.rect<span class="p">(</span>gp <span class="o">=</span> gpar<span class="p">(</span>col <span class="o">=</span> <span class="s">&quot;grey&quot;</span><span class="p">),</span> vp <span class="o">=</span> title<span class="p">)</span>
+grid.rect<span class="p">(</span>gp <span class="o">=</span> gpar<span class="p">(</span>col <span class="o">=</span> <span class="s">&quot;grey&quot;</span><span class="p">),</span> vp <span class="o">=</span> subtitle<span class="p">)</span>
+grid.rect<span class="p">(</span>gp <span class="o">=</span> gpar<span class="p">(</span>col <span class="o">=</span> <span class="s">&quot;grey&quot;</span><span class="p">),</span> vp <span class="o">=</span> main<span class="p">)</span>
+grid.rect<span class="p">(</span>gp <span class="o">=</span> gpar<span class="p">(</span>col <span class="o">=</span> <span class="s">&quot;grey&quot;</span><span class="p">),</span> vp <span class="o">=</span> footnote<span class="p">)</span></code></pre></div>
+
+<p><img src="http://wahani.github.io/journal/images/images/2015-02-11-grid-layouts/unnamed-chunk-1-1.png" title="center" alt="center" width="100%" /></p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[DatendesignR Config]]></title>
+    <link href="http://wahani.github.io/journal/blog/2015/02/07/Datendesign-setup"/>
+    <updated>2015-02-07T00:00:00+01:00</updated>
+    <id>http://wahani.github.io/journal/blog/2015/02/07/Datendesign-setup</id>
+    <content type="html"><![CDATA[<h1 id="setup-the-datendesign-stuff">Setup the <em>Datendesign</em> stuff</h1>
+
+<h2 id="data-for-graphics">Data for graphics</h2>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kp">dir.create</span><span class="p">(</span><span class="s">&quot;_rmd/data&quot;</span><span class="p">)</span>
+<span class="kp">writeLines</span><span class="p">(</span><span class="s">&quot;*&quot;</span><span class="p">,</span> <span class="s">&quot;_rmd/data/.gitignore&quot;</span><span class="p">)</span>
+download.file<span class="p">(</span><span class="s">&quot;http://www.datendesign-r.de/alle_daten.zip&quot;</span><span class="p">,</span>
+              <span class="s">&quot;_rmd/data/alle_daten.zip&quot;</span><span class="p">)</span>
+unzip<span class="p">(</span><span class="s">&quot;_rmd/data/alle_daten.zip&quot;</span><span class="p">,</span> exdir <span class="o">=</span> <span class="s">&quot;_rmd/data&quot;</span><span class="p">)</span></code></pre></div>
+
+<h2 id="code-for-all-examples">Code for all examples</h2>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">download.file<span class="p">(</span><span class="s">&quot;http://www.datendesign-r.de/beispielcode.zip&quot;</span><span class="p">,</span>
+              <span class="s">&quot;_rmd/data/beispielcode.zip&quot;</span><span class="p">)</span>
+unzip<span class="p">(</span><span class="s">&quot;_rmd/data/beispielcode.zip&quot;</span><span class="p">,</span> exdir <span class="o">=</span> <span class="s">&quot;_rmd/data&quot;</span><span class="p">)</span></code></pre></div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[6.1.1]]></title>
+    <link href="http://wahani.github.io/journal/blog/2015/02/07/Datendesign-Barplot-simple"/>
+    <updated>2015-02-07T00:00:00+01:00</updated>
+    <id>http://wahani.github.io/journal/blog/2015/02/07/Datendesign-Barplot-simple</id>
+    <content type="html"><![CDATA[<h1 id="barplot-simple">Barplot simple</h1>
+
+<p>This is a reproduction of chapter 6.1.1 in <a href="http://www.datendesign-r.de/"><em>Datendesign mit R</em></a> with ggplot2.</p>
+
+<h2 id="preparing-data">Preparing data</h2>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">ipsos <span class="o">&lt;-</span> read.csv2<span class="p">(</span><span class="s">&quot;data/alle_daten/ipsos.csv&quot;</span><span class="p">)</span>
+ipsos <span class="o">&lt;-</span> ipsos<span class="p">[</span><span class="kp">order</span><span class="p">(</span>ipsos<span class="o">$</span>Wert<span class="p">),]</span>
+ipsos<span class="o">$</span>Land <span class="o">&lt;-</span> <span class="kp">ordered</span><span class="p">(</span>ipsos<span class="o">$</span>Land<span class="p">,</span> ipsos<span class="o">$</span>Land<span class="p">)</span>
+ipsos<span class="o">$</span>textFamily <span class="o">&lt;-</span> <span class="kp">ifelse</span><span class="p">(</span>ipsos<span class="o">$</span>Land <span class="o">%in%</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;Deutschland&quot;</span><span class="p">,</span><span class="s">&quot;Brasilien&quot;</span><span class="p">),</span>
+                          <span class="s">&quot;Lato Black&quot;</span><span class="p">,</span> <span class="s">&quot;Lato Light&quot;</span><span class="p">)</span>
+ipsos<span class="o">$</span>labels <span class="o">&lt;-</span> <span class="kp">paste0</span><span class="p">(</span>ipsos<span class="o">$</span>Land<span class="p">,</span> <span class="kp">ifelse</span><span class="p">(</span>ipsos<span class="o">$</span>Wert <span class="o">&lt;</span> <span class="m">10</span><span class="p">,</span> <span class="s">&quot;     &quot;</span><span class="p">,</span> <span class="s">&quot;  &quot;</span><span class="p">),</span>
+                                   ipsos<span class="o">$</span>Wert<span class="p">)</span>
+rect <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>ymin <span class="o">=</span> <span class="kp">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">80</span><span class="p">,</span> <span class="m">20</span><span class="p">),</span>
+           ymax <span class="o">=</span> <span class="kp">seq</span><span class="p">(</span><span class="m">20</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">20</span><span class="p">),</span>
+           xmin <span class="o">=</span> <span class="m">0.5</span><span class="p">,</span> xmax <span class="o">=</span> <span class="m">16.5</span><span class="p">,</span>
+           colour <span class="o">=</span> <span class="kp">rep</span><span class="p">(</span><span class="kt">c</span><span class="p">(</span>grDevices<span class="o">::</span>rgb<span class="p">(</span><span class="m">191</span><span class="p">,</span><span class="m">239</span><span class="p">,</span><span class="m">255</span><span class="p">,</span><span class="m">80</span><span class="p">,</span>maxColorValue<span class="o">=</span><span class="m">255</span><span class="p">),</span>
+                          grDevices<span class="o">::</span>rgb<span class="p">(</span><span class="m">191</span><span class="p">,</span><span class="m">239</span><span class="p">,</span><span class="m">255</span><span class="p">,</span><span class="m">120</span><span class="p">,</span>maxColorValue<span class="o">=</span><span class="m">255</span><span class="p">)),</span>
+                        length.out <span class="o">=</span> <span class="m">5</span><span class="p">))</span></code></pre></div>
+
+<h2 id="the-plot">The plot</h2>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>ggplot2<span class="p">)</span>
+ggBar <span class="o">&lt;-</span> ggplot<span class="p">(</span>ipsos<span class="p">)</span> <span class="o">+</span>
+  geom_bar<span class="p">(</span>aes<span class="p">(</span>x <span class="o">=</span> Land<span class="p">,</span> y <span class="o">=</span> Wert<span class="p">),</span> stat <span class="o">=</span> <span class="s">&quot;identity&quot;</span><span class="p">,</span> fill <span class="o">=</span> <span class="s">&quot;grey&quot;</span><span class="p">)</span> <span class="o">+</span>
+  scale_y_continuous<span class="p">(</span>breaks <span class="o">=</span> <span class="kp">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">100</span><span class="p">,</span> <span class="m">20</span><span class="p">),</span> limits <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">100</span><span class="p">),</span> expand <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span> <span class="o">+</span>
+  scale_x_discrete<span class="p">(</span>labels <span class="o">=</span> ipsos<span class="o">$</span><span class="kp">labels</span><span class="p">)</span> <span class="o">+</span>
+  geom_rect<span class="p">(</span>data <span class="o">=</span> rect<span class="p">,</span>
+            mapping <span class="o">=</span> aes<span class="p">(</span>ymin <span class="o">=</span> ymin<span class="p">,</span> ymax <span class="o">=</span> ymax<span class="p">,</span>
+                          xmin <span class="o">=</span> xmin<span class="p">,</span> xmax <span class="o">=</span> xmax<span class="p">),</span>
+            fill <span class="o">=</span> rect<span class="o">$</span>colour<span class="p">)</span> <span class="o">+</span>
+  geom_bar<span class="p">(</span>aes<span class="p">(</span>x <span class="o">=</span> Land<span class="p">,</span> y <span class="o">=</span> <span class="kp">ifelse</span><span class="p">(</span>Land <span class="o">%in%</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;Brasilien&quot;</span><span class="p">,</span> <span class="s">&quot;Deutschland&quot;</span><span class="p">),</span> Wert<span class="p">,</span> <span class="kc">NA</span><span class="p">)),</span>
+           stat <span class="o">=</span> <span class="s">&quot;identity&quot;</span><span class="p">,</span> fill <span class="o">=</span> rgb<span class="p">(</span><span class="m">255</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">210</span><span class="p">,</span>maxColorValue<span class="o">=</span><span class="m">255</span><span class="p">))</span> <span class="o">+</span>
+  theme_minimal<span class="p">()</span> <span class="o">+</span>
+  labs<span class="p">(</span>y <span class="o">=</span> <span class="kc">NULL</span><span class="p">,</span>
+       x <span class="o">=</span> <span class="kc">NULL</span><span class="p">,</span>
+       title <span class="o">=</span> <span class="kc">NULL</span><span class="p">)</span> <span class="o">+</span>
+  geom_hline<span class="p">(</span>aes<span class="p">(</span>yintercept <span class="o">=</span> <span class="m">45</span><span class="p">),</span> colour <span class="o">=</span> <span class="s">&quot;skyblue3&quot;</span><span class="p">)</span> <span class="o">+</span>
+  coord_flip<span class="p">()</span> <span class="o">+</span>
+  theme<span class="p">(</span>panel.grid.minor <span class="o">=</span> element_blank<span class="p">(),</span>
+        panel.grid.major <span class="o">=</span> element_blank<span class="p">(),</span>
+        axis.ticks <span class="o">=</span> element_blank<span class="p">(),</span>
+        axis.text.y <span class="o">=</span> element_text<span class="p">(</span>
+          family <span class="o">=</span> ipsos<span class="o">$</span>textFamily<span class="p">),</span>
+        axis.title.x <span class="o">=</span> element_text<span class="p">(</span>
+          hjust <span class="o">=</span> <span class="m">1</span><span class="p">,</span>
+          vjust <span class="o">=</span> <span class="m">0</span><span class="p">,</span>
+          size <span class="o">=</span> <span class="m">9</span><span class="p">),</span>
+        plot.title <span class="o">=</span> element_text<span class="p">(</span>
+          family <span class="o">=</span> <span class="s">&quot;Lato Black&quot;</span><span class="p">,</span>
+          hjust <span class="o">=</span> <span class="m">-0.7</span><span class="p">,</span>
+          vjust <span class="o">=</span> <span class="m">1</span><span class="p">),</span>
+        text <span class="o">=</span> element_text<span class="p">(</span>family <span class="o">=</span> <span class="s">&quot;Lato Light&quot;</span><span class="p">))</span>
+
+ggBar</code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## Warning: Removed 14 rows containing missing values (position_stack).</code></pre></div>
+
+<p><img src="http://wahani.github.io/journal/images/images/2015-02-07-Datendesign-Barplot-simple/unnamed-chunk-3-1.png" title="center" alt="center" width="100%" /></p>
+
+<h2 id="annotations-and-layout">Annotations and layout</h2>
+
+<p>Not really happy with this one. Defining the places on the viewport where I want to push elements:</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span><span class="s">&quot;grid&quot;</span><span class="p">)</span>
+
+main <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.9</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.8</span><span class="p">,</span> 
+                 just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">),</span> name <span class="o">=</span> <span class="s">&quot;main&quot;</span><span class="p">)</span>
+title <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.9</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.6</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.1</span><span class="p">,</span>
+                  just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">))</span>
+subtitle <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.85</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.4</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span>
+                     just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">))</span>
+footnote <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0.55</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.4</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span>
+                     just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">))</span>
+annotation1 <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0.7</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.8</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.225</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span>
+                        just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">))</span>
+annotation2 <span class="o">&lt;-</span> viewport<span class="p">(</span>x <span class="o">=</span> <span class="m">0.4</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.8</span><span class="p">,</span> w <span class="o">=</span> <span class="m">0.13</span><span class="p">,</span> h <span class="o">=</span> <span class="m">0.05</span><span class="p">,</span>
+                        just <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;left&quot;</span><span class="p">,</span> <span class="s">&quot;bottom&quot;</span><span class="p">))</span></code></pre></div>
+
+<p>Now the elements and optionally to store the final graphic in a pdf:</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># pdf_datei&lt;-&quot;balkendiagramme_einfach.pdf&quot;</span>
+<span class="c1"># cairo_pdf(bg = &quot;grey98&quot;, pdf_datei, width=9, height=6.5)</span>
+grid.newpage<span class="p">()</span>
+<span class="kp">print</span><span class="p">(</span>ggBar<span class="p">,</span> vp <span class="o">=</span> main<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## Warning: Removed 14 rows containing missing values (position_stack).</code></pre></div>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">pushViewport<span class="p">(</span>title<span class="p">)</span>
+grid.text<span class="p">(</span><span class="s">&quot;&#39;Ich glaube fest an Gott oder ein höheres Wesen&#39;&quot;</span><span class="p">,</span> 
+          gp <span class="o">=</span> gpar<span class="p">(</span>fontfamily <span class="o">=</span> <span class="s">&quot;Lato Black&quot;</span><span class="p">,</span> fontsize <span class="o">=</span> <span class="m">14</span><span class="p">),</span> 
+          just <span class="o">=</span> <span class="s">&quot;left&quot;</span><span class="p">,</span> x <span class="o">=</span> <span class="m">0.05</span><span class="p">)</span>
+upViewport<span class="p">()</span>
+pushViewport<span class="p">(</span>subtitle<span class="p">)</span>
+grid.text<span class="p">(</span><span class="s">&quot;...sagten 2010 in:&quot;</span><span class="p">,</span> 
+          gp <span class="o">=</span> gpar<span class="p">(</span>fontfamily <span class="o">=</span> <span class="s">&quot;Lato Light&quot;</span><span class="p">,</span> fontsize <span class="o">=</span> <span class="m">12</span><span class="p">),</span> 
+          just <span class="o">=</span> <span class="s">&quot;left&quot;</span><span class="p">,</span> 
+          x <span class="o">=</span> <span class="m">0.05</span><span class="p">)</span>
+upViewport<span class="p">()</span>
+pushViewport<span class="p">(</span>footnote<span class="p">)</span>
+grid.text<span class="p">(</span><span class="s">&quot;Quelle: www.ipsos-na.com, Design: Stefan Fichtel, ixtract&quot;</span><span class="p">,</span> 
+          gp <span class="o">=</span> gpar<span class="p">(</span>fontfamily <span class="o">=</span> <span class="s">&quot;Lato Light&quot;</span><span class="p">,</span> fontsize <span class="o">=</span> <span class="m">9</span><span class="p">),</span> 
+          just <span class="o">=</span> <span class="s">&quot;right&quot;</span><span class="p">,</span> 
+          x <span class="o">=</span> <span class="m">0.95</span><span class="p">)</span>
+upViewport<span class="p">()</span>
+pushViewport<span class="p">(</span>annotation1<span class="p">)</span>
+grid.text<span class="p">(</span><span class="s">&quot;Alle Angaben in Prozent&quot;</span><span class="p">,</span> 
+          gp <span class="o">=</span> gpar<span class="p">(</span>fontfamily <span class="o">=</span> <span class="s">&quot;Lato Light&quot;</span><span class="p">,</span> fontsize <span class="o">=</span> <span class="m">9</span><span class="p">),</span> 
+          just <span class="o">=</span> <span class="s">&quot;right&quot;</span><span class="p">,</span> 
+          x <span class="o">=</span> <span class="m">1</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.55</span><span class="p">)</span>
+upViewport<span class="p">()</span>
+pushViewport<span class="p">(</span>annotation2<span class="p">)</span>
+grid.text<span class="p">(</span><span class="s">&quot;Durchschnitt: 45&quot;</span><span class="p">,</span> 
+          gp <span class="o">=</span> gpar<span class="p">(</span>fontfamily <span class="o">=</span> <span class="s">&quot;Lato Light&quot;</span><span class="p">,</span> fontsize <span class="o">=</span> <span class="m">9</span><span class="p">),</span> 
+          just <span class="o">=</span> <span class="s">&quot;right&quot;</span><span class="p">,</span> 
+          x <span class="o">=</span> <span class="m">0.95</span><span class="p">,</span> y <span class="o">=</span> <span class="m">0.55</span><span class="p">)</span>
+upViewport<span class="p">()</span></code></pre></div>
+
+<p><img src="http://wahani.github.io/journal/images/images/2015-02-07-Datendesign-Barplot-simple/unnamed-chunk-5-1.png" title="center" alt="center" width="100%" /></p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># dev.off()</span></code></pre></div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Post Processing Graphics]]></title>
+    <link href="http://wahani.github.io/journal/blog/2015/02/01/post-processing-graphics"/>
+    <updated>2015-02-01T00:00:00+01:00</updated>
+    <id>http://wahani.github.io/journal/blog/2015/02/01/post-processing-graphics</id>
+    <content type="html"><![CDATA[<h1 id="resources">Resources</h1>
+
+<ul>
+  <li>The open source software <a href="http://www.scribus.net/canvas/Scribus">Scribus</a></li>
+  <li>Or Inkscape:
+    <ul>
+      <li><a href="https://www.youtube.com/watch?v=YEf-NWvLJEU">YouTube Tutorial with ggplot2</a></li>
+    </ul>
+  </li>
+</ul>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[2015-01-27 Notes Statistical Learning]]></title>
+    <link href="http://wahani.github.io/journal/blog/2015/01/27/Notes-on-statistical-learning"/>
+    <updated>2015-01-27T00:00:00+01:00</updated>
+    <id>http://wahani.github.io/journal/blog/2015/01/27/Notes-on-statistical-learning</id>
+    <content type="html"><![CDATA[<h1 id="linear-regression">Linear Regression</h1>
+
+<ul>
+  <li>Mosteller and Tukey 1977: interpretation of regression coefficients <em>keeping all other variables constant</em></li>
+  <li>George Box:</li>
+</ul>
+
+<blockquote>
+  <p><em>Essentially, all models are wrong, but some are useful</em></p>
+</blockquote>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[2015-01-26-Notes]]></title>
@@ -56,8 +663,8 @@
 
 <div class="highlight"><pre><code class="language-r" data-lang="r"><span class="kn">library</span><span class="p">(</span>methods<span class="p">)</span>
 S4df <span class="o">&lt;-</span> setClass<span class="p">(</span>
-    <span class="s">&quot;S4df&quot;</span><span class="p">,</span> 
-    contains <span class="o">=</span> <span class="s">&quot;data.frame&quot;</span><span class="p">,</span> 
+    <span class="s">&quot;S4df&quot;</span><span class="p">,</span>
+    contains <span class="o">=</span> <span class="s">&quot;data.frame&quot;</span><span class="p">,</span>
     slots <span class="o">=</span> <span class="kt">list</span><span class="p">(</span><span class="s">&quot;attributes&quot;</span> <span class="o">=</span> <span class="s">&quot;list&quot;</span><span class="p">)</span>
     <span class="p">)</span>
 
@@ -154,15 +761,15 @@ vec_mean<span class="p">(</span><span class="kt">list</span><span class="p">(</s
 
 <h2 id="requirements">Requirements</h2>
 
-<div class="highlight"><pre><code class="language-r" data-lang="r">install.packages<span class="p">(</span>
-  <span class="kt">c</span><span class="p">(</span><span class="s">&#39;servr&#39;</span><span class="p">,</span> <span class="s">&#39;knitr&#39;</span><span class="p">),</span>
-  type <span class="o">=</span> <span class="s">&#39;source&#39;</span><span class="p">,</span>
-  repos <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&#39;http://yihui.name/xran&#39;</span><span class="p">,</span> <span class="s">&#39;http://cran.rstudio.com&#39;</span><span class="p">)</span>
-<span class="p">)</span></code></pre></div>
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="lineno">1</span> install.packages<span class="p">(</span>
+<span class="lineno">2</span>   <span class="kt">c</span><span class="p">(</span><span class="s">&#39;servr&#39;</span><span class="p">,</span> <span class="s">&#39;knitr&#39;</span><span class="p">),</span>
+<span class="lineno">3</span>   type <span class="o">=</span> <span class="s">&#39;source&#39;</span><span class="p">,</span>
+<span class="lineno">4</span>   repos <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&#39;http://yihui.name/xran&#39;</span><span class="p">,</span> <span class="s">&#39;http://cran.rstudio.com&#39;</span><span class="p">)</span>
+<span class="lineno">5</span> <span class="p">)</span></code></pre></div>
 
 <h2 id="in-rstudio">In RStudio</h2>
 
-<div class="highlight"><pre><code class="language-r" data-lang="r">servr<span class="o">::</span>jekyll<span class="p">(</span>input <span class="o">=</span> <span class="s">&quot;_rmd&quot;</span><span class="p">,</span> output <span class="o">=</span> <span class="s">&quot;source/_posts&quot;</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="lineno">1</span> servr<span class="o">::</span>jekyll<span class="p">(</span>input <span class="o">=</span> <span class="s">&quot;_rmd&quot;</span><span class="p">,</span> output <span class="o">=</span> <span class="s">&quot;source/_posts&quot;</span><span class="p">)</span></code></pre></div>
 
 ]]></content>
   </entry>
@@ -172,7 +779,7 @@ vec_mean<span class="p">(</span><span class="kt">list</span><span class="p">(</s
     <link href="http://wahani.github.io/journal/blog/2014/06/15/Functional-Programming-with-lambdar"/>
     <updated>2014-06-15T00:00:00+02:00</updated>
     <id>http://wahani.github.io/journal/blog/2014/06/15/Functional-Programming-with-lambdar</id>
-    <content type="html"><![CDATA[<p>My first post was on <a href="http://wahani.github.io/journal/Introducing-S4-Methods/">S4-methods</a> and how I could add new features to a function without changing it – using function dispatch in S4. This works out fine, but is not optimal for me. </p>
+    <content type="html"><![CDATA[<p>My first post was on <a href="http://wahani.github.io/journal/Introducing-S4-Methods/">S4-methods</a> and how I could add new features to a function without changing it – using function dispatch in S4. This works out fine, but is not optimal for me.</p>
 
 <ul>
   <li>The function <code>setMethod</code> introduces code which is dificult to read</li>
@@ -199,22 +806,22 @@ applyFun <span class="o">&lt;-</span> <span class="kr">function</span><span clas
 applyFun<span class="p">(</span>dat<span class="p">,</span> <span class="s">&quot;x&quot;</span><span class="p">,</span> <span class="kp">mean</span><span class="p">,</span> <span class="s">&quot;group&quot;</span><span class="p">)</span></code></pre></div>
 
 <div class="highlight"><pre><code class="language-text" data-lang="text">##             x group
-## 1.1  1.966370     1
-## 1.2  1.966370     1
-## 1.3  1.966370     1
-## 1.4  1.966370     1
-## 1.5  1.966370     1
-## 2.6  4.230699     2
-## 2.7  4.230699     2
-## 2.8  4.230699     2
-## 2.9  4.230699     2
-## 2.10 4.230699     2</code></pre></div>
+## 1.1  2.481702     1
+## 1.2  2.481702     1
+## 1.3  2.481702     1
+## 1.4  2.481702     1
+## 1.5  2.481702     1
+## 2.6  4.930705     2
+## 2.7  4.930705     2
+## 2.8  4.930705     2
+## 2.9  4.930705     2
+## 2.10 4.930705     2</code></pre></div>
 
 <p>The function <code>applyFun</code> will apply <code>fun</code> on a subset denoted by <code>group</code> and the variable <code>var</code>. This may be usefull if you do transformations on single variables which are different in each group, or you do not want your data collapsed, i.e. preserve the original number of rows. <code>group</code> for example can be a chracter with <code>length &gt; 1</code>, I can plug in any function wich will return a scalar or a vector with the length of the input. However, it will only work on a single variable in the data, so <code>var</code> schould have length 1. I could try something with <code>[</code> instead of <code>[[</code> for subsetting but then the requirements for <code>fun</code> will change and I do want to preserve the behaviour of <code>applyFun</code>.</p>
 
 <h2 id="how-can-lambdar-help">How can lambda.r help?</h2>
 
-<p>There are different possibilities to allow vectors in the argument <code>var</code> of <code>applyFun</code>:     <br />
+<p>There are different possibilities to allow vectors in the argument <code>var</code> of <code>applyFun</code>:
 * rewrite <code>applyFun</code>
 * write a new function calling <code>applyFun</code>
 * write a function called <code>applyFun</code> calling the version of <code>applyFun</code> where <code>var</code> is a scalar: use the function dispatch introduced in lambda.r
@@ -246,31 +853,31 @@ applyFun<span class="p">(</span>dat<span class="p">,</span> var<span class="p">,
 applyFun<span class="p">(</span>dat<span class="p">,</span> <span class="s">&quot;x&quot;</span><span class="p">,</span> <span class="kp">mean</span><span class="p">,</span> <span class="s">&quot;group&quot;</span><span class="p">)</span></code></pre></div>
 
 <div class="highlight"><pre><code class="language-text" data-lang="text">##             x group
-## 1.1  1.966370     1
-## 1.2  1.966370     1
-## 1.3  1.966370     1
-## 1.4  1.966370     1
-## 1.5  1.966370     1
-## 2.6  4.230699     2
-## 2.7  4.230699     2
-## 2.8  4.230699     2
-## 2.9  4.230699     2
-## 2.10 4.230699     2</code></pre></div>
+## 1.1  2.481702     1
+## 1.2  2.481702     1
+## 1.3  2.481702     1
+## 1.4  2.481702     1
+## 1.5  2.481702     1
+## 2.6  4.930705     2
+## 2.7  4.930705     2
+## 2.8  4.930705     2
+## 2.9  4.930705     2
+## 2.10 4.930705     2</code></pre></div>
 
 <div class="highlight"><pre><code class="language-r" data-lang="r">dat<span class="p">[</span><span class="s">&quot;y&quot;</span><span class="p">]</span> <span class="o">&lt;-</span> rnorm<span class="p">(</span><span class="m">10</span><span class="p">)</span>
 applyFun<span class="p">(</span>dat<span class="p">,</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="p">,</span> <span class="s">&quot;y&quot;</span><span class="p">),</span> <span class="kp">mean</span><span class="p">,</span> <span class="s">&quot;group&quot;</span><span class="p">)</span></code></pre></div>
 
-<div class="highlight"><pre><code class="language-text" data-lang="text">##               x group           y
-## 1.1.1  1.966370     1 -0.23740634
-## 1.1.2  1.966370     1 -0.23740634
-## 1.1.3  1.966370     1 -0.23740634
-## 1.1.4  1.966370     1 -0.23740634
-## 1.1.5  1.966370     1 -0.23740634
-## 2.2.6  4.230699     2 -0.05986417
-## 2.2.7  4.230699     2 -0.05986417
-## 2.2.8  4.230699     2 -0.05986417
-## 2.2.9  4.230699     2 -0.05986417
-## 2.2.10 4.230699     2 -0.05986417</code></pre></div>
+<div class="highlight"><pre><code class="language-text" data-lang="text">##               x group          y
+## 1.1.1  2.481702     1 -0.7070260
+## 1.1.2  2.481702     1 -0.7070260
+## 1.1.3  2.481702     1 -0.7070260
+## 1.1.4  2.481702     1 -0.7070260
+## 1.1.5  2.481702     1 -0.7070260
+## 2.2.6  4.930705     2 -0.5315593
+## 2.2.7  4.930705     2 -0.5315593
+## 2.2.8  4.930705     2 -0.5315593
+## 2.2.9  4.930705     2 -0.5315593
+## 2.2.10 4.930705     2 -0.5315593</code></pre></div>
 
 <p>With <code>%when%</code> I introduce a condition, or multiple conditions, which needs to evaluate to <code>TRUE</code>. If it does the function body introduced by <code>%as%</code> is evaluated exactly like before. So I am generating a couple of more lines, but I can reuse the function body of the original <code>applyFun</code> definition. The second definition of <code>applyFun</code> is what will be called if <code>length(var) != 1</code>. So something like the else statement in a if-else clause. Like in a if-else control structure the order is important. So either I control access using a second <code>%when%</code> or the definition needs to be after the ‘<code>length(var) == 1</code>’ version, which I did here.</p>
 ]]></content>
@@ -332,7 +939,7 @@ datEval <span class="o">&lt;-</span> melt<span class="p">(</span>dat<span class=
 <p>Imagine this style of writing with more complex data and models and hundreds or thousands of lines of code. Reproducing yourself is a mess, let alone find bugs, mistakes, etc. Another issue is that a lot of effort is needed to parallelize the computation. I would need to replace every looping structure with a parallel version. And furthermore the real task is shadowed by all kinds of unnecessary control structures. The idea to overcome this was to write one function which would do the data generation and computation on that data. That would lead only to one loop and to a potentially long function for simulation – although it is not a problem to split the task step-wise into smaller functions which would be called in the ‘main’ simulation function. In the end this is what I tried with saeSim. I identified the repeating steps and built a framework so I can easily set-up simulations without thinking about the structure and more about the statistical problem.</p>
 
 <h2 id="a-simsetup">A sim_setup</h2>
-<p>In all I have 6 steps I can part my simulation into. </p>
+<p>In all I have 6 steps I can part my simulation into.</p>
 
 <ul>
   <li>data generation: <code>sim_gen()</code></li>
@@ -362,13 +969,13 @@ setup <span class="o">&lt;-</span> base_id<span class="p">(</span><span class="m
 
 <div class="highlight"><pre><code class="language-r" data-lang="r">setup</code></pre></div>
 
-<div class="highlight"><pre><code class="language-text" data-lang="text">##   idD idU           x           e         y
-## 1   1   1  0.37848715 -0.56426537 100.19271
-## 2   1   2 -0.03322072  0.03155332  99.96511
-## 3   1   3  0.69302346 -0.91341329 100.47263
-## 4   1   4  0.70192788 -1.14242630 100.26143
-## 5   1   5  0.88992447 -0.44572650 101.33412
-## 6   1   6 -0.72537724  1.60834101 100.15759</code></pre></div>
+<div class="highlight"><pre><code class="language-text" data-lang="text">##   idD idU          x          e         y
+## 1   1   1  0.3153918 -0.7025133  99.92827
+## 2   1   2  0.1968682 -1.0272020  99.36653
+## 3   1   3 -2.2219992 -1.5642642  93.99174
+## 4   1   4  1.9272049  2.3189092 106.17332
+## 5   1   5  0.4566154 -0.7306165 100.18261
+## 6   1   6  1.0991948  0.2066723 102.40506</code></pre></div>
 
 <p>Note that the response ‘y’ will always be constructed automatically. To visualize the data, the plot method will always try to find ‘y’ and plot it against the first variable found.</p>
 
@@ -414,7 +1021,7 @@ setup <span class="o">&lt;-</span> base_id<span class="p">(</span><span class="m
 setup</code></pre></div>
 
 <div class="highlight"><pre><code class="language-text" data-lang="text">##         lm     mean  popMean
-## 1 100.5592 100.5592 99.80724</code></pre></div>
+## 1 100.2171 100.2171 100.1091</code></pre></div>
 
 <div class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Running the simulation</span>
 res <span class="o">&lt;-</span> sim<span class="p">(</span>setup<span class="p">,</span> R <span class="o">=</span> <span class="m">100</span><span class="p">)</span>
@@ -433,6 +1040,32 @@ datEval <span class="o">&lt;-</span> melt<span class="p">(</span>dat<span class=
 
 <h2 id="how-to-get-started">How to get started</h2>
 <p>If you have come this far and in the case you are still interested in what this is about, go to the <a href="http://wahani.github.io/journal/saeSim">homepage of saeSim</a>, install the package, checkout the vignette, add comments here or on <a href="https://github.com/wahani/saeSim">GitHub</a>…</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Split-apply-combine With Dplyr]]></title>
+    <link href="http://wahani.github.io/journal/blog/2014/03/10/split-apply-combine%20with%20dplyr"/>
+    <updated>2014-03-10T00:00:00+01:00</updated>
+    <id>http://wahani.github.io/journal/blog/2014/03/10/split-apply-combine with dplyr</id>
+    <content type="html"><![CDATA[
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="lineno">1</span> <span class="kn">library</span><span class="p">(</span>dplyr<span class="p">)</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">## 
+## Attache Paket: &#39;dplyr&#39;
+## 
+## The following object is masked from &#39;package:MASS&#39;:
+## 
+##     select
+## 
+## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter
+## 
+## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre></div>
+
 ]]></content>
   </entry>
   
